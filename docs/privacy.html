@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Privacy Policy - 4K Screenshot Studio</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+            },
+            colors: {
+              border: "#eaeaea",
+              accents: "#666666",
+              foreground: "#000000",
+              background: "#ffffff",
+              surface: "#fafafa",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        -webkit-font-smoothing: antialiased;
+      }
+      .glass {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid #eaeaea;
+      }
+    </style>
+  </head>
+  <body class="bg-background text-foreground font-sans selection:bg-black selection:text-white">
+    <nav class="fixed top-0 w-full z-50 glass">
+      <div class="flex justify-between items-center px-6 py-4 max-w-6xl mx-auto">
+        <a href="index.html" class="text-lg font-bold tracking-tight flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <div class="w-6 h-6 bg-black rounded flex items-center justify-center">
+            <div class="w-2.5 h-2.5 bg-white rounded-sm"></div>
+          </div>
+          4K Studio
+        </a>
+      </div>
+    </nav>
+
+    <main class="pt-32 pb-24 px-6">
+      <div class="max-w-3xl mx-auto">
+        <h1 class="font-extrabold text-4xl md:text-5xl tracking-tight mb-4">Privacy Policy</h1>
+        <p class="text-accents mb-16 text-lg">Effective Date: April 2026</p>
+
+        <div class="space-y-12 text-lg leading-relaxed text-gray-800">
+          <section>
+            <h2 class="font-bold text-2xl mb-4 text-black border-b border-border pb-2">1. Local Processing Only</h2>
+            <p>
+              4K Screenshot Studio operates on a strict "local-first" architectural principle. The core functionality of the extension—capturing your screen, rendering backgrounds, and applying canvas transformations—happens entirely within your local browser environment. 
+              <strong>We do not send your images, screenshots, or screen data to any external servers.</strong> Your sensitive visual data never leaves your device.
+            </p>
+          </section>
+
+          <section>
+            <h2 class="font-bold text-2xl mb-4 text-black border-b border-border pb-2">2. Data Collection</h2>
+            <p>
+              We prioritize your privacy by actively choosing not to collect data. Specifically:
+            </p>
+            <ul class="list-disc pl-6 mt-4 space-y-2 text-accents">
+              <li>We do not collect personal identification information.</li>
+              <li>We do not track your browsing history or interactions.</li>
+              <li>We do not employ any third-party telemetry, analytics, or behavioral tracking scripts within the extension.</li>
+              <li>We never access or log the contents of the web pages you capture.</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 class="font-bold text-2xl mb-4 text-black border-b border-border pb-2">3. Required Permissions</h2>
+            <p>To function properly, the extension requests the following Google Chrome permissions:</p>
+            <ul class="list-disc pl-6 mt-4 space-y-2 text-accents">
+              <li><strong><code>activeTab</code>:</strong> Allows the extension to capture the visible area of the specific, active tab you choose to execute it on. Our code cannot observe any background tabs.</li>
+              <li><strong><code>scripting</code>:</strong> Required exclusively to temporarily inject the full-page scrolling mechanism. This ensures long-form web pages scroll and stitch natively to maintain 4K fidelity.</li>
+            </ul>
+            <p class="mt-4 text-accents">
+              These permissions are utilized strictly on-demand, triggering only when you explicitly click the extension action icon.
+            </p>
+          </section>
+
+          <section>
+            <h2 class="font-bold text-2xl mb-4 text-black border-b border-border pb-2">4. Changes to this Policy</h2>
+            <p>
+              We may update our Privacy Policy occasionally to reflect changes in our practices or for other operational, legal, or regulatory reasons. Because we do not collect your email address, any significant updates will be reflected directly on this public page.
+            </p>
+          </section>
+
+          <section>
+            <h2 class="font-bold text-2xl mb-4 text-black border-b border-border pb-2">5. Contact Us</h2>
+            <p>
+              If you have any questions, concerns, or requests regarding this Privacy Policy, please open an issue on our GitHub repository or reach out via our associated social channels.
+            </p>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <footer class="w-full py-12 px-6 border-t border-border bg-surface mt-10">
+      <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+        <div class="flex items-center gap-3">
+          <div class="w-5 h-5 bg-black rounded flex items-center justify-center">
+            <div class="w-2 h-2 bg-white rounded-sm"></div>
+          </div>
+          <span class="font-bold text-sm">4K Studio</span>
+        </div>
+        <div class="flex gap-6 text-sm text-accents">
+          <a class="hover:text-black transition-colors" href="index.html">Home</a>
+          <a class="hover:text-black transition-colors" href="#">Twitter</a>
+          <a class="hover:text-black transition-colors" href="#">GitHub</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

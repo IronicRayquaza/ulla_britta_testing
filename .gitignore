@@ -1,0 +1,17 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Extension Distribution
+*.zip
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Chrome & Editor settings
+.vscode/
+.idea/
+*.log

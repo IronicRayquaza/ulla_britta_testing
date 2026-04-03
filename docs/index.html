@@ -1,0 +1,637 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>4K Screenshot Studio — Professional Browser Screens & Mockups</title>
+    <meta name="description" content="Capture high-resolution 4K full-page screenshots and transform them into professional design mockups. 3D effects, macOS frames, and instant social media exports.">
+    <meta name="keywords" content="screenshot extension, chrome extension, 4k screen capture, 3d screenshot, design mockups, browser mockup, product showcase">
+    
+    <!-- Open Graph / Social Media -->
+    <meta property="og:title" content="4K Screenshot Studio">
+    <meta property="og:description" content="Turn browser captures into professional product showcases in seconds.">
+    <meta property="og:image" content="studio.png">
+    <meta property="og:type" content="website">
+    
+    <link rel="icon" type="image/png" href="icon128.png">
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+            },
+            colors: {
+              border: "#eaeaea",
+              accents: "#666666",
+              foreground: "#000000",
+              background: "#ffffff",
+              surface: "#fafafa",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        -webkit-font-smoothing: antialiased;
+      }
+      .glass {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid #eaeaea;
+      }
+      .card {
+        background: #ffffff;
+        border: 1px solid #eaeaea;
+        box-shadow:
+          0 4px 6px -1px rgba(0, 0, 0, 0.02),
+          0 2px 4px -1px rgba(0, 0, 0, 0.04);
+        transition:
+          box-shadow 0.2s ease,
+          transform 0.2s ease;
+      }
+      .card:hover {
+        box-shadow:
+          0 10px 15px -3px rgba(0, 0, 0, 0.05),
+          0 4px 6px -2px rgba(0, 0, 0, 0.03);
+      }
+      .gradient-text {
+        background: linear-gradient(to right, #111, #666);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-background text-foreground font-sans selection:bg-black selection:text-white"
+  >
+    <nav class="fixed top-0 w-full z-50 glass">
+      <div
+        class="flex justify-between items-center px-6 py-4 max-w-6xl mx-auto"
+      >
+        <div class="text-xl font-bold tracking-tight flex items-center gap-3">
+          <img src="icon128.png" alt="Logo" class="w-8 h-8 rounded-lg shadow-sm">
+          <span>4K Studio</span>
+        </div>
+        <div
+          class="hidden md:flex items-center gap-8 text-sm font-medium text-accents"
+        >
+          <a class="hover:text-black transition-colors" href="#features"
+            >Features</a
+          >
+          <a class="hover:text-black transition-colors" href="#gallery"
+            >Showcase</a
+          >
+        </div>
+        <button
+          class="bg-black text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-800 transition-colors"
+        >
+          Add to Chrome
+        </button>
+      </div>
+    </nav>
+
+    <main>
+      <!-- Hero Section -->
+      <section class="pt-40 pb-20 px-6 overflow-hidden">
+        <div class="max-w-4xl mx-auto flex flex-col items-center text-center">
+          <div
+            class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface border border-border text-accents text-xs font-semibold mb-8"
+          >
+            <span class="relative flex h-2 w-2">
+              <span
+                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-500 opacity-75"
+              ></span>
+              <span
+                class="relative inline-flex rounded-full h-2 w-2 bg-purple-500"
+              ></span>
+            </span>
+            Studio Editor seamlessly integrated
+          </div>
+          <h1
+            class="font-extrabold text-5xl md:text-7xl tracking-tighter mb-6 leading-tight max-w-3xl"
+          >
+            Screenshots that look <br />
+            <span class="gradient-text">professionally designed.</span>
+          </h1>
+          <p
+            class="text-accents text-lg md:text-xl max-w-2xl mb-12 leading-relaxed"
+          >
+            Capture full web pages in absolute 4K fidelity and instantly
+            transform them into elegant product showcases directly within your
+            browser.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4 items-center mb-20">
+            <button
+              class="bg-black text-white px-8 py-3.5 rounded-lg font-semibold text-base hover:bg-gray-800 transition-colors shadow-sm"
+            >
+              Add to Chrome — Free
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Feature Section -->
+      <section
+        class="py-24 px-6 bg-surface border-y border-border"
+        id="features"
+      >
+        <div class="max-w-6xl mx-auto">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <!-- 4K Full Page & Visible Area -->
+            <div
+              class="card rounded-2xl p-10 flex flex-col h-full min-h-[360px] group"
+            >
+              <div class="flex justify-between items-start mb-6">
+                <div
+                  class="w-12 h-12 rounded-lg bg-gray-100 border border-border flex items-center justify-center"
+                >
+                  <span class="material-symbols-outlined text-black"
+                    >screenshot_region</span
+                  >
+                </div>
+              </div>
+              <h3 class="font-bold text-2xl tracking-tight mb-3">
+                Native 4K Captures
+              </h3>
+              <p class="text-accents leading-relaxed mb-6">
+                Render long-form pages or entire viewports naturally without
+                downscaling. The engine hooks deeply into the page to extract
+                uncompressed geometry natively.
+              </p>
+
+              <!-- Interactive Illustration -->
+              <div
+                class="relative w-full h-full bg-gray-50 border border-border rounded-xl overflow-hidden mt-auto mb-6 flex items-center justify-center transition-colors duration-500 group-hover:bg-gray-100 cursor-crosshair"
+              >
+                <!-- Grid background -->
+                <div
+                  class="absolute inset-0 opacity-10 transition-opacity duration-500 group-hover:opacity-30"
+                  style="
+                    background-image: radial-gradient(
+                      #000 1px,
+                      transparent 1px
+                    );
+                    background-size: 12px 12px;
+                  "
+                ></div>
+
+                <!-- Mini browser frame -->
+                <div
+                  class="relative w-4/5 h-1/2 bg-white border border-border shadow-sm rounded-md overflow-hidden flex flex-col transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:h-2/3 group-hover:w-11/12 group-hover:shadow-2xl"
+                >
+                  <!-- Browser header -->
+                  <div
+                    class="h-4 bg-gray-100 border-b border-border flex items-center px-2 gap-1 w-full shrink-0"
+                  >
+                    <div class="w-1.5 h-1.5 rounded-full bg-[#ff5f56]"></div>
+                    <div class="w-1.5 h-1.5 rounded-full bg-[#ffbd2e]"></div>
+                    <div class="w-1.5 h-1.5 rounded-full bg-[#27c93f]"></div>
+                  </div>
+
+                  <!-- Browser Content (Scrolling) -->
+                  <div
+                    class="relative w-full h-full bg-white overflow-hidden pointer-events-none"
+                  >
+                    <!-- The miniature webpage that scrolls up -->
+                    <div
+                      class="flex flex-col w-full transition-transform duration-[1.5s] ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:-translate-y-[160px] bg-white"
+                    >
+                      <!-- Mini Navbar -->
+                      <div
+                        class="flex items-center justify-between px-2 py-1.5 border-b border-border"
+                      >
+                        <div class="flex items-center gap-1">
+                          <div class="w-1.5 h-1.5 bg-black rounded-sm"></div>
+                          <div class="w-4 h-1 bg-gray-300 rounded-sm"></div>
+                        </div>
+                        <div class="flex gap-1 items-center">
+                          <div class="w-3 h-0.5 bg-gray-200 rounded-sm"></div>
+                          <div class="w-3 h-0.5 bg-gray-200 rounded-sm"></div>
+                          <div
+                            class="w-4 h-1.5 bg-black rounded-sm ml-0.5"
+                          ></div>
+                        </div>
+                      </div>
+
+                      <!-- Mini Hero Section -->
+                      <div
+                        class="flex flex-col items-center text-center py-4 bg-gray-50/50"
+                      >
+                        <div
+                          class="w-8 h-1 bg-green-400/50 rounded-full mb-1.5"
+                        ></div>
+                        <div class="w-20 h-2 bg-black rounded-sm mb-1"></div>
+                        <div class="w-16 h-2 bg-black rounded-sm mb-2"></div>
+                        <div
+                          class="w-24 h-0.5 bg-gray-400 rounded-sm mb-0.5"
+                        ></div>
+                        <div
+                          class="w-20 h-0.5 bg-gray-400 rounded-sm mb-2"
+                        ></div>
+                        <div class="flex gap-1">
+                          <div
+                            class="w-8 h-2 bg-black rounded-[2px] shadow-sm"
+                          ></div>
+                          <div class="w-8 h-2 bg-gray-200 rounded-[2px]"></div>
+                        </div>
+                      </div>
+
+                      <!-- Mini Features Grid -->
+                      <div
+                        class="px-2 py-2 grid grid-cols-3 gap-1 grid-rows-2 border-y border-gray-50 bg-surface"
+                      >
+                        <!-- Feature 1 -->
+                        <div
+                          class="bg-white border border-border p-1 rounded-[2px] flex flex-col items-start gap-0.5 shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
+                        >
+                          <div
+                            class="w-2.5 h-2.5 bg-gray-100 rounded-[2px] mb-0.5"
+                          ></div>
+                          <div class="w-5 h-0.5 bg-gray-800 rounded-full"></div>
+                          <div
+                            class="w-full h-[1px] bg-gray-300 rounded-full"
+                          ></div>
+                          <div
+                            class="w-4/5 h-[1px] bg-gray-300 rounded-full"
+                          ></div>
+                        </div>
+                        <!-- Feature 2 -->
+                        <div
+                          class="bg-white border border-border p-1 rounded-[2px] flex flex-col items-start gap-0.5 shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
+                        >
+                          <div
+                            class="w-2.5 h-2.5 bg-gray-100 rounded-[2px] mb-0.5"
+                          ></div>
+                          <div class="w-5 h-0.5 bg-gray-800 rounded-full"></div>
+                          <div
+                            class="w-full h-[1px] bg-gray-300 rounded-full"
+                          ></div>
+                          <div
+                            class="w-3/4 h-[1px] bg-gray-300 rounded-full"
+                          ></div>
+                        </div>
+                        <!-- Feature 3 -->
+                        <div
+                          class="bg-white border border-border p-1 rounded-[2px] flex flex-col items-start gap-0.5 shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
+                        >
+                          <div
+                            class="w-2.5 h-2.5 bg-gray-100 rounded-[2px] mb-0.5"
+                          ></div>
+                          <div class="w-5 h-0.5 bg-gray-800 rounded-full"></div>
+                          <div
+                            class="w-full h-[1px] bg-gray-300 rounded-full"
+                          ></div>
+                          <div
+                            class="w-5/6 h-[1px] bg-gray-300 rounded-full"
+                          ></div>
+                        </div>
+                        <!-- Feature 4 -->
+                        <div
+                          class="bg-white border border-border p-1 rounded-[2px] flex flex-col items-start gap-0.5 shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
+                        >
+                          <div
+                            class="w-2.5 h-2.5 bg-gray-100 rounded-[2px] mb-0.5"
+                          ></div>
+                          <div class="w-5 h-0.5 bg-gray-800 rounded-full"></div>
+                          <div
+                            class="w-full h-[1px] bg-gray-300 rounded-full"
+                          ></div>
+                          <div
+                            class="w-4/5 h-[1px] bg-gray-300 rounded-full"
+                          ></div>
+                        </div>
+                        <!-- Feature 5 -->
+                        <div
+                          class="bg-white border border-border p-1 rounded-[2px] flex flex-col items-start gap-0.5 shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
+                        >
+                          <div
+                            class="w-2.5 h-2.5 bg-gray-100 rounded-[2px] mb-0.5"
+                          ></div>
+                          <div class="w-5 h-0.5 bg-gray-800 rounded-full"></div>
+                          <div
+                            class="w-full h-[1px] bg-gray-300 rounded-full"
+                          ></div>
+                          <div
+                            class="w-full h-[1px] bg-gray-300 rounded-full"
+                          ></div>
+                        </div>
+                        <!-- Feature 6 -->
+                        <div
+                          class="bg-white border border-border p-1 rounded-[2px] flex flex-col items-start gap-0.5 shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
+                        >
+                          <div
+                            class="w-2.5 h-2.5 bg-gray-100 rounded-[2px] mb-0.5"
+                          ></div>
+                          <div class="w-5 h-0.5 bg-gray-800 rounded-full"></div>
+                          <div
+                            class="w-full h-[1px] bg-gray-300 rounded-full"
+                          ></div>
+                          <div
+                            class="w-2/3 h-[1px] bg-gray-300 rounded-full"
+                          ></div>
+                        </div>
+                      </div>
+
+                      <!-- Mini Gallery Section -->
+                      <div class="px-2 py-3 flex flex-col items-center">
+                        <div
+                          class="w-12 h-1.5 bg-gray-800 rounded-sm mb-1.5"
+                        ></div>
+                        <div
+                          class="w-16 h-0.5 bg-gray-400 rounded-sm mb-2"
+                        ></div>
+                        <div
+                          class="w-full h-16 bg-gray-50 rounded-sm border border-gray-200 overflow-hidden relative shadow-inner"
+                        >
+                          <div
+                            class="absolute inset-0 opacity-20 bg-gradient-to-tr from-gray-300 to-transparent"
+                          ></div>
+                          <div
+                            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full border border-gray-300 flex items-center justify-center"
+                          >
+                            <div
+                              class="w-1.5 h-1.5 rounded-full bg-gray-300"
+                            ></div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Mini Big CTA -->
+                      <div
+                        class="px-2 py-5 bg-black flex flex-col items-center"
+                      >
+                        <div class="w-16 h-2 bg-white rounded-sm mb-1"></div>
+                        <div
+                          class="w-20 h-0.5 bg-gray-400 rounded-sm mb-2"
+                        ></div>
+                        <div
+                          class="w-12 h-2.5 bg-white rounded-[2px] shadow-sm"
+                        ></div>
+                      </div>
+
+                      <!-- Mini Footer -->
+                      <div
+                        class="px-2 py-2 flex justify-between items-center bg-gray-50 border-t border-gray-100"
+                      >
+                        <div class="w-6 h-0.5 bg-gray-400 rounded-sm"></div>
+                        <div class="flex gap-0.5">
+                          <div class="w-1.5 h-1.5 rounded-sm bg-gray-300"></div>
+                          <div class="w-1.5 h-1.5 rounded-sm bg-gray-300"></div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Scan line -->
+                    <div
+                      class="absolute left-0 right-0 h-[2px] bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,1)] top-0 -translate-y-full opacity-0 group-hover:opacity-100 group-hover:translate-y-[240px] transition-all duration-[1.2s] ease-linear z-10"
+                    ></div>
+                    <div
+                      class="absolute left-0 right-0 h-16 bg-gradient-to-b from-transparent to-blue-500/10 top-0 -translate-y-full opacity-0 group-hover:opacity-100 group-hover:translate-y-[240px] transition-all duration-[1.2s] ease-linear z-0 blur-sm pointer-events-none -mt-16"
+                    ></div>
+                  </div>
+                </div>
+
+                <!-- Badge -->
+                <div
+                  class="absolute top-3 right-3 px-2 py-0.5 bg-black text-white text-[9px] font-bold rounded opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 delay-200 shadow-md tracking-wider"
+                >
+                  4K Capture
+                </div>
+              </div>
+
+              <div class="flex flex-wrap gap-2">
+                <span
+                  class="px-3 py-1.5 rounded-md bg-gray-100 text-xs font-semibold text-gray-700 border border-border/50"
+                  >Full Page Stitching</span
+                >
+                <span
+                  class="px-3 py-1.5 rounded-md bg-gray-100 text-xs font-semibold text-gray-700 border border-border/50"
+                  >High-DPI Support</span
+                >
+              </div>
+            </div>
+
+            <!-- Professional Editor -->
+            <div
+              class="card rounded-2xl p-10 flex flex-col h-full min-h-[360px]"
+            >
+              <div
+                class="w-12 h-12 rounded-lg bg-gray-100 border border-border flex items-center justify-center mb-6"
+              >
+                <span class="material-symbols-outlined text-black"
+                  >palette</span
+                >
+              </div>
+              <h3 class="font-bold text-2xl tracking-tight mb-3">
+                Studio Editor
+              </h3>
+              <p class="text-accents leading-relaxed mb-8">
+                An embedded infinite canvas. Apply beautiful macOS window
+                frames, smooth gradients, and deep shadows instantly.
+              </p>
+              <div
+                class="mt-auto relative rounded-lg overflow-hidden h-full flex items-center border border-border mask-b-from-50%"
+              >
+                <img
+                  alt="Editor interface"
+                  class="w-full h-3/4 shadow-sm object-left object-cover"
+                  src="studio.png"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Social Export in 1-Click -->
+          <div class="card rounded-2xl p-10">
+            <div class="grid md:grid-cols-2 gap-10 items-center">
+              <div>
+                <h3 class="font-bold text-3xl tracking-tight mb-4">
+                  Export to Any Platform
+                </h3>
+                <p class="text-accents leading-relaxed mb-8">
+                  Forget manual cropping in Figma. Select your target design
+                  platform and our smart framing technology recalculates the
+                  geometric boundaries to ensure fully proportional exports.
+                </p>
+                <div class="flex flex-wrap gap-2">
+                  <span
+                    class="px-3 py-1.5 rounded-md bg-gray-100 text-xs font-semibold text-gray-700 border border-border/50"
+                    >X / Twitter</span
+                  >
+                  <span
+                    class="px-3 py-1.5 rounded-md bg-gray-100 text-xs font-semibold text-gray-700 border border-border/50"
+                    >LinkedIn</span
+                  >
+                  <span
+                    class="px-3 py-1.5 rounded-md bg-gray-100 text-xs font-semibold text-gray-700 border border-border/50"
+                    >Dribbble</span
+                  >
+                  <span
+                    class="px-3 py-1.5 rounded-md bg-gray-100 text-xs font-semibold text-gray-700 border border-border/50"
+                    >Behance</span
+                  >
+                </div>
+              </div>
+              <div
+                class="flex justify-center md:justify-end gap-4 h-full items-center"
+              >
+                <div
+                  class="w-20 h-20 rounded-2xl bg-white border border-border flex items-center justify-center text-gray-400 hover:text-black transition-colors shadow-sm"
+                >
+                  <span class="material-symbols-outlined text-3xl"
+                    >crop_free</span
+                  >
+                </div>
+                <div
+                  class="w-20 h-20 rounded-2xl bg-black border border-black flex items-center justify-center text-white shadow-xl"
+                >
+                  <span class="material-symbols-outlined text-3xl"
+                    >download</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Creative Gallery -->
+      <section class="py-24 px-6 overflow-hidden" id="gallery">
+        <div class="max-w-6xl mx-auto mb-16 text-center">
+          <h2 class="font-extrabold text-4xl tracking-tight mb-4">
+            Made with 4K Studio
+          </h2>
+          <p class="text-accents text-lg">
+            Achieve flawless mockups instantly.
+          </p>
+        </div>
+
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto"
+        >
+          <!-- Gallery Item 1 -->
+          <div class="flex flex-col gap-6 lg:pt-12">
+            <div
+              class="bg-gray-100 p-6 rounded-2xl border border-border hover:-translate-y-1 transition-transform cursor-pointer"
+            >
+              <img
+                alt="Capture 1"
+                class="rounded border border-black/10 shadow-lg"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8AM69OaX4L5Dx-TUEc-rq0fRg9rgmJ2nqGfuR-H052epAh1Nq05O2jwsypVF3MyFIIICNKXdTUye4_ry8aCkAETsWtXQbejAhb9eYkhSSm27IX6-5JtsPz2XyC-Z5JZWnX9dygSuIdvr4nVVBBzwyWR6Ivs2GM63LK0jNwYQa8CrPfn11VuLxCb-M-oGuE-bMg9b5I-WErMdsRlmPo6IBsYPzOHsxjNlq2Gui9NX_0ZiwFy6BQBvI5LyWxdSpL5Gg6-9z5guQmq3s"
+              />
+            </div>
+            <div
+              class="bg-surface p-6 rounded-2xl border border-border h-32 flex items-center justify-center hidden lg:flex"
+            >
+              <div class="w-1/2 h-2 bg-gray-200 rounded-full"></div>
+            </div>
+          </div>
+
+          <!-- Gallery Item 2 -->
+          <div class="flex flex-col gap-6">
+            <div
+              class="bg-surface p-6 rounded-2xl border border-border h-48 flex items-center justify-center overflow-hidden hidden lg:flex"
+            >
+              <img
+                alt="Capture 2"
+                class="w-full rounded border border-border shadow-sm rotate-12 scale-150"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAl3z2AggJNGTzp_iKtHeB8YmAKU-dt8GvoXy3QhuypJii-C2B188el6C8k6qSBYP7lkaMpC3XvXbshiOXZ2zf1p2zoy_TAvzYnQoAQLQcmrCcDBXDLiO57qXPyBZMvUAhvELRact-bUqf2Wwbi1DVjt0roYnqJ-fBwIE1Wl0MwGxhiWvH6h558nR6ToPyvQFUmB0GGJuYlKE4LeGuLkOI7fklFYQYS8pD-T1G26mWy76Jdoqz8gr5Tf6rZ1bCQE1DWtOzVk70g6-s7"
+              />
+            </div>
+            <div
+              class="bg-gray-100 p-6 rounded-2xl border border-border hover:-translate-y-1 transition-transform cursor-pointer"
+            >
+              <img
+                alt="Capture 3"
+                class="rounded border border-black/10 shadow-lg"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_3N0uKWsOt-1WyhqR9_VfB8cvuPH6UKDvQeqyo3huvCON7LJruLDFRrNxa2snC5pKgEnEFkTM0GN3v_fEGYavsbT3GYUWj5Pfs4V0Bi_lBk3uCDZopxvZlFivVeBuzTwDLO6XMDNSr4aIgFXUz4pgiPbmMu4WUyOBVqkKNr_LwIh0eUVIfpz_A0LJLyrVbyReV-Lh-czeF2oH31AXFriQ92OZ9ByIn_94LE57k-UgqDX1KULQSgbSsw9pu_MnzEDmAfdV4krTmXQE"
+              />
+            </div>
+          </div>
+
+          <!-- Gallery Item 3 -->
+          <div class="flex flex-col gap-6 lg:pt-20">
+            <div
+              class="bg-black p-8 rounded-2xl border border-gray-800 hover:-translate-y-1 transition-transform cursor-pointer"
+            >
+              <img
+                alt="Capture 4"
+                class="rounded border border-white/20 shadow-2xl"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDm_vFki1m6wUcmCtO7V_2u-fI5fx-4gvguh8vc4x3T_XHLXFCxIzt65qK4hdRbU1l84pz4VF6vMJFhZ0OJPWfUQky9G3cnmzt_pkXgJrPsEYy213mYobYnXe-O2_Z4LsCBCxBtQFC-IghlqQz6F23TL2vj1an7ClgZqJeF3Rbx4TRO-QuPTLTrL-vjCAxl94pwyMVnUR3FBVw22jtVpjDK0cRR6p-CJlDDPT9Drum-9l2zEPohjeakJzeyDj46ra2RTIwe6xV8pbWE"
+              />
+            </div>
+          </div>
+
+          <!-- Gallery Item 4 -->
+          <div class="flex flex-col gap-6">
+            <div
+              class="bg-gray-100 p-6 rounded-2xl border border-border hover:-translate-y-1 transition-transform cursor-pointer"
+            >
+              <img
+                alt="Capture 5"
+                class="rounded border border-black/10 shadow-lg"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_3N0uKWsOt-1WyhqR9_VfB8cvuPH6UKDvQeqyo3huvCON7LJruLDFRrNxa2snC5pKgEnEFkTM0GN3v_fEGYavsbT3GYUWj5Pfs4V0Bi_lBk3uCDZopxvZlFivVeBuzTwDLO6XMDNSr4aIgFXUz4pgiPbmMu4WUyOBVqkKNr_LwIh0eUVIfpz_A0LJLyrVbyReV-Lh-czeF2oH31AXFriQ92OZ9ByIn_94LE57k-UgqDX1KULQSgbSsw9pu_MnzEDmAfdV4krTmXQE"
+              />
+            </div>
+            <div
+              class="bg-surface p-6 rounded-2xl border border-border h-48 flex items-center justify-center hidden lg:flex"
+            >
+              <div
+                class="w-16 h-16 border-2 border-dashed border-gray-300 rounded-full"
+              ></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Final CTA -->
+      <section class="py-24 px-6 relative border-t border-border bg-white">
+        <div class="max-w-3xl mx-auto text-center p-12">
+          <h2 class="font-extrabold text-4xl md:text-5xl mb-6 tracking-tight">
+            Streamline your captures.
+          </h2>
+          <p class="text-accents text-lg mb-10">
+            Stop launching heavy design software just to add a nice shadow to
+            your screenshots. Do it directly in your browser.
+          </p>
+          <button
+            class="bg-black text-white px-10 py-4 rounded-lg font-semibold text-lg hover:bg-gray-800 transition-colors shadow-lg"
+          >
+            Install Extension
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="w-full py-12 px-6 border-t border-border bg-surface">
+      <div
+        class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6"
+      >
+        <div class="flex items-center gap-3">
+          <img src="icon128.png" alt="Logo" class="w-6 h-6 opacity-80">
+          <span class="font-bold text-sm">4K Studio</span>
+        </div>
+        <div class="flex gap-6 text-sm text-accents">
+          <a class="hover:text-black transition-colors" href="#">Twitter</a>
+          <a class="hover:text-black transition-colors" href="#">GitHub</a>
+          <a class="hover:text-black transition-colors" href="privacy.html">Privacy</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
