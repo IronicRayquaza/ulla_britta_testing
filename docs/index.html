@@ -83,10 +83,10 @@
       <div
         class="flex justify-between items-center px-6 py-4 max-w-6xl mx-auto"
       >
-        <div class="text-xl font-bold tracking-tight flex items-center gap-3">
+        <a href="index.html" class="text-xl font-bold tracking-tight flex items-center gap-3">
           <img src="icon128.png" alt="Logo" class="w-8 h-8 rounded-lg shadow-sm">
           <span>4K Studio</span>
-        </div>
+        </a>
         <div
           class="hidden md:flex items-center gap-8 text-sm font-medium text-accents"
         >
@@ -97,11 +97,13 @@
             >Showcase</a
           >
         </div>
-        <button
-          class="bg-black text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-800 transition-colors"
+        <a
+          href="https://chromewebstore.google.com/detail/4k-screenshot-studio/amdiokhaegjhbkmjopjeijhhmbbjhifa"
+          target="_blank"
+          class="bg-black text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-800 transition-all flex items-center gap-2"
         >
           Add to Chrome
-        </button>
+        </a>
       </div>
     </nav>
 
@@ -136,11 +138,13 @@
             browser.
           </p>
           <div class="flex flex-col sm:flex-row gap-4 items-center mb-20">
-            <button
-              class="bg-black text-white px-8 py-3.5 rounded-lg font-semibold text-base hover:bg-gray-800 transition-colors shadow-sm"
+            <a
+              href="https://chromewebstore.google.com/detail/4k-screenshot-studio/amdiokhaegjhbkmjopjeijhhmbbjhifa"
+              target="_blank"
+              class="bg-black text-white px-8 py-3.5 rounded-lg font-semibold text-base hover:bg-gray-800 transition-all shadow-sm flex items-center gap-2"
             >
-              Add to Chrome — Free
-            </button>
+              Start Capturing
+            </a>
           </div>
         </div>
       </section>
@@ -209,7 +213,7 @@
                   >
                     <!-- The miniature webpage that scrolls up -->
                     <div
-                      class="flex flex-col w-full transition-transform duration-[1.5s] ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:-translate-y-[160px] bg-white"
+                      class="flex flex-col w-full transition-transform duration-[4s] delay-300 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:-translate-y-[160px] bg-white"
                     >
                       <!-- Mini Navbar -->
                       <div
@@ -398,10 +402,10 @@
 
                     <!-- Scan line -->
                     <div
-                      class="absolute left-0 right-0 h-[2px] bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,1)] top-0 -translate-y-full opacity-0 group-hover:opacity-100 group-hover:translate-y-[240px] transition-all duration-[1.2s] ease-linear z-10"
+                      class="absolute left-0 right-0 h-[2px] bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,1)] top-0 -translate-y-full opacity-0 group-hover:opacity-100 group-hover:translate-y-[240px] transition-all duration-[2.5s] delay-700 ease-linear z-10"
                     ></div>
                     <div
-                      class="absolute left-0 right-0 h-16 bg-gradient-to-b from-transparent to-blue-500/10 top-0 -translate-y-full opacity-0 group-hover:opacity-100 group-hover:translate-y-[240px] transition-all duration-[1.2s] ease-linear z-0 blur-sm pointer-events-none -mt-16"
+                      class="absolute left-0 right-0 h-16 bg-gradient-to-b from-transparent to-blue-500/10 top-0 -translate-y-full opacity-0 group-hover:opacity-100 group-hover:translate-y-[240px] transition-all duration-[2.5s] delay-700 ease-linear z-0 blur-sm pointer-events-none -mt-16"
                     ></div>
                   </div>
                 </div>
@@ -445,7 +449,7 @@
                 frames, smooth gradients, and deep shadows instantly.
               </p>
               <div
-                class="mt-auto relative rounded-lg overflow-hidden h-full flex items-center border border-border mask-b-from-50%"
+                class="mt-auto relative rounded-lg overflow-hidden h-full flex items-center border border-border"
               >
                 <img
                   alt="Editor interface"
@@ -511,90 +515,50 @@
       </section>
 
       <!-- Creative Gallery -->
-      <section class="py-24 px-6 overflow-hidden" id="gallery">
-        <div class="max-w-6xl mx-auto mb-16 text-center">
-          <h2 class="font-extrabold text-4xl tracking-tight mb-4">
-            Made with 4K Studio
+      <section class="py-24 px-6 overflow-hidden bg-white" id="gallery">
+        <div class="max-w-6xl mx-auto mb-20 text-center">
+          <div
+            class="inline-block px-3 py-1 bg-black text-white text-[10px] font-bold uppercase tracking-[0.2em] rounded-full mb-6"
+          >
+            Showcase
+          </div>
+          <h2 class="font-extrabold text-4xl md:text-6xl tracking-tighter mb-6">
+            The Studio in Action
           </h2>
-          <p class="text-accents text-lg">
-            Achieve flawless mockups instantly.
+          <p class="text-accents text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
+            Every detail captured in native 4K. No compromises, just pure clarity for your professional product showcases.
           </p>
         </div>
 
-        <div
-          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto"
-        >
-          <!-- Gallery Item 1 -->
-          <div class="flex flex-col gap-6 lg:pt-12">
-            <div
-              class="bg-gray-100 p-6 rounded-2xl border border-border hover:-translate-y-1 transition-transform cursor-pointer"
-            >
-              <img
-                alt="Capture 1"
-                class="rounded border border-black/10 shadow-lg"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8AM69OaX4L5Dx-TUEc-rq0fRg9rgmJ2nqGfuR-H052epAh1Nq05O2jwsypVF3MyFIIICNKXdTUye4_ry8aCkAETsWtXQbejAhb9eYkhSSm27IX6-5JtsPz2XyC-Z5JZWnX9dygSuIdvr4nVVBBzwyWR6Ivs2GM63LK0jNwYQa8CrPfn11VuLxCb-M-oGuE-bMg9b5I-WErMdsRlmPo6IBsYPzOHsxjNlq2Gui9NX_0ZiwFy6BQBvI5LyWxdSpL5Gg6-9z5guQmq3s"
-              />
-            </div>
-            <div
-              class="bg-surface p-6 rounded-2xl border border-border h-32 flex items-center justify-center hidden lg:flex"
-            >
-              <div class="w-1/2 h-2 bg-gray-200 rounded-full"></div>
-            </div>
+        <div class="grid grid-cols-1 md:grid-cols-12 auto-rows-[240px] gap-6 max-w-7xl mx-auto">
+          <!-- horizontal1: Large Hero -->
+          <div class="md:col-span-8 md:row-span-2 relative overflow-hidden rounded-3xl border border-border shadow-sm hover-zoom cursor-pointer">
+            <img src="horizontal1.jpeg" alt="SaaS Dashboard Export" class="w-full h-full object-cover transition-transform duration-500 ease-out">
           </div>
 
-          <!-- Gallery Item 2 -->
-          <div class="flex flex-col gap-6">
-            <div
-              class="bg-surface p-6 rounded-2xl border border-border h-48 flex items-center justify-center overflow-hidden hidden lg:flex"
-            >
-              <img
-                alt="Capture 2"
-                class="w-full rounded border border-border shadow-sm rotate-12 scale-150"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAl3z2AggJNGTzp_iKtHeB8YmAKU-dt8GvoXy3QhuypJii-C2B188el6C8k6qSBYP7lkaMpC3XvXbshiOXZ2zf1p2zoy_TAvzYnQoAQLQcmrCcDBXDLiO57qXPyBZMvUAhvELRact-bUqf2Wwbi1DVjt0roYnqJ-fBwIE1Wl0MwGxhiWvH6h558nR6ToPyvQFUmB0GGJuYlKE4LeGuLkOI7fklFYQYS8pD-T1G26mWy76Jdoqz8gr5Tf6rZ1bCQE1DWtOzVk70g6-s7"
-              />
-            </div>
-            <div
-              class="bg-gray-100 p-6 rounded-2xl border border-border hover:-translate-y-1 transition-transform cursor-pointer"
-            >
-              <img
-                alt="Capture 3"
-                class="rounded border border-black/10 shadow-lg"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_3N0uKWsOt-1WyhqR9_VfB8cvuPH6UKDvQeqyo3huvCON7LJruLDFRrNxa2snC5pKgEnEFkTM0GN3v_fEGYavsbT3GYUWj5Pfs4V0Bi_lBk3uCDZopxvZlFivVeBuzTwDLO6XMDNSr4aIgFXUz4pgiPbmMu4WUyOBVqkKNr_LwIh0eUVIfpz_A0LJLyrVbyReV-Lh-czeF2oH31AXFriQ92OZ9ByIn_94LE57k-UgqDX1KULQSgbSsw9pu_MnzEDmAfdV4krTmXQE"
-              />
-            </div>
+          <!-- vertical1: Tall side piece -->
+          <div class="md:col-span-4 md:row-span-3 relative overflow-hidden rounded-3xl border border-border shadow-sm hover-zoom cursor-pointer">
+            <img src="vertical1.jpeg" alt="Vertical Mobile Capture" class="w-full h-full object-cover transition-transform duration-500 ease-out">
           </div>
 
-          <!-- Gallery Item 3 -->
-          <div class="flex flex-col gap-6 lg:pt-20">
-            <div
-              class="bg-black p-8 rounded-2xl border border-gray-800 hover:-translate-y-1 transition-transform cursor-pointer"
-            >
-              <img
-                alt="Capture 4"
-                class="rounded border border-white/20 shadow-2xl"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDm_vFki1m6wUcmCtO7V_2u-fI5fx-4gvguh8vc4x3T_XHLXFCxIzt65qK4hdRbU1l84pz4VF6vMJFhZ0OJPWfUQky9G3cnmzt_pkXgJrPsEYy213mYobYnXe-O2_Z4LsCBCxBtQFC-IghlqQz6F23TL2vj1an7ClgZqJeF3Rbx4TRO-QuPTLTrL-vjCAxl94pwyMVnUR3FBVw22jtVpjDK0cRR6p-CJlDDPT9Drum-9l2zEPohjeakJzeyDj46ra2RTIwe6xV8pbWE"
-              />
-            </div>
+          <!-- horizontal2: Medium piece -->
+          <div class="md:col-span-4 md:row-span-1 relative overflow-hidden rounded-3xl border border-border shadow-sm hover-zoom cursor-pointer">
+            <img src="horizontal2.jpeg" alt="Studio Edit" class="w-full h-full object-cover transition-transform duration-500 ease-out">
           </div>
 
-          <!-- Gallery Item 4 -->
-          <div class="flex flex-col gap-6">
-            <div
-              class="bg-gray-100 p-6 rounded-2xl border border-border hover:-translate-y-1 transition-transform cursor-pointer"
-            >
-              <img
-                alt="Capture 5"
-                class="rounded border border-black/10 shadow-lg"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_3N0uKWsOt-1WyhqR9_VfB8cvuPH6UKDvQeqyo3huvCON7LJruLDFRrNxa2snC5pKgEnEFkTM0GN3v_fEGYavsbT3GYUWj5Pfs4V0Bi_lBk3uCDZopxvZlFivVeBuzTwDLO6XMDNSr4aIgFXUz4pgiPbmMu4WUyOBVqkKNr_LwIh0eUVIfpz_A0LJLyrVbyReV-Lh-czeF2oH31AXFriQ92OZ9ByIn_94LE57k-UgqDX1KULQSgbSsw9pu_MnzEDmAfdV4krTmXQE"
-              />
-            </div>
-            <div
-              class="bg-surface p-6 rounded-2xl border border-border h-48 flex items-center justify-center hidden lg:flex"
-            >
-              <div
-                class="w-16 h-16 border-2 border-dashed border-gray-300 rounded-full"
-              ></div>
-            </div>
+          <!-- horizontal3: Medium piece -->
+          <div class="md:col-span-4 md:row-span-1 relative overflow-hidden rounded-3xl border border-border shadow-sm hover-zoom cursor-pointer">
+            <img src="horizontal3.jpeg" alt="Studio Edit 2" class="w-full h-full object-cover transition-transform duration-500 ease-out">
+          </div>
+
+          <!-- vertical2: Side piece -->
+          <div class="md:col-span-4 md:row-span-2 relative overflow-hidden rounded-3xl border border-border shadow-sm hover-zoom cursor-pointer">
+            <img src="vertical2.jpeg" alt="Vertical Capture 2" class="w-full h-full object-cover transition-transform duration-500 ease-out">
+          </div>
+
+          <!-- horizontal4: Bottom wide - Fixed Height -->
+          <div class="md:col-span-8 md:row-span-2 relative overflow-hidden rounded-3xl border border-border shadow-sm hover-zoom cursor-pointer">
+            <img src="horizontal4.jpeg" alt="Marketing Hero" class="w-full h-full object-cover transition-transform duration-500 ease-out">
           </div>
         </div>
       </section>
@@ -609,11 +573,13 @@
             Stop launching heavy design software just to add a nice shadow to
             your screenshots. Do it directly in your browser.
           </p>
-          <button
-            class="bg-black text-white px-10 py-4 rounded-lg font-semibold text-lg hover:bg-gray-800 transition-colors shadow-lg"
+          <a
+            href="https://chromewebstore.google.com/detail/4k-screenshot-studio/amdiokhaegjhbkmjopjeijhhmbbjhifa"
+            target="_blank"
+            class="bg-black text-white px-10 py-4 rounded-lg font-semibold text-lg hover:bg-gray-800 transition-all shadow-lg inline-block"
           >
             Install Extension
-          </button>
+          </a>
         </div>
       </section>
     </main>
@@ -627,11 +593,30 @@
           <span class="font-bold text-sm">4K Studio</span>
         </div>
         <div class="flex gap-6 text-sm text-accents">
-          <a class="hover:text-black transition-colors" href="#">Twitter</a>
-          <a class="hover:text-black transition-colors" href="#">GitHub</a>
+          <a class="hover:text-black transition-colors" href="https://github.com/PrathamS1/4K-Screenshot-Studio" target="_blank">GitHub</a>
           <a class="hover:text-black transition-colors" href="privacy.html">Privacy</a>
         </div>
       </div>
     </footer>
+    <script>
+      document.querySelectorAll('.hover-zoom').forEach(item => {
+        const img = item.querySelector('img');
+        
+        item.addEventListener('mousemove', (e) => {
+          const rect = item.getBoundingClientRect();
+          const x = ((e.clientX - rect.left) / rect.width) * 100;
+          const y = ((e.clientY - rect.top) / rect.height) * 100;
+          
+          const moveX = (x - 50) / 15; 
+          const moveY = (y - 50) / 15;
+          
+          img.style.transform = `scale(1.1) translate(${-moveX}%, ${-moveY}%)`;
+        });
+        
+        item.addEventListener('mouseleave', () => {
+          img.style.transform = `scale(1) translate(0, 0)`;
+        });
+      });
+    </script>
   </body>
 </html>
