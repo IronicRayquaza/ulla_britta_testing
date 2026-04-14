@@ -26,8 +26,12 @@ let state = {
   scaleImage: 100,
   radius: 16,
   shadow: 40,
-  color: '#ff3366',
-  size: 4
+  color: '#000000',
+  size: 4,
+  textLayers: [
+    { text: 'Sample Text', font: "'Inter', sans-serif", preset: 'header', size: 80, depth: 'off', x: 50, y: 20, color: '#000000', rect: null }
+  ],
+  selectedTextIndex: 0
 };
 
 const patternCache = {};
@@ -199,31 +203,124 @@ function initUI() {
     }
   });
 
-  ['padding', 'radius', 'shadow', 'offsetX', 'offsetY', 'scaleImage'].forEach(param => {
+  ['padding', 'radius', 'shadow', 'offsetX', 'offsetY', 'scaleImage', 'textSize'].forEach(param => {
     const input = document.getElementById(`param-${param}`);
     if (!input) return;
     input.addEventListener('input', (e) => {
       state[param] = parseInt(e.target.value);
       let suffix = 'px';
       if (param === 'shadow' || param === 'offsetX' || param === 'offsetY' || param === 'scaleImage') suffix = '%';
-      document.getElementById(`val-${param}`).textContent = state[param] + suffix;
+      if (param === 'textSize') suffix = 'px';
+
+      const label = document.getElementById(`val-${param}`);
+      if (label) label.textContent = state[param] + suffix;
+
+      if (param === 'textSize') {
+        const layer = state.textLayers[state.selectedTextIndex];
+        if (layer) layer.size = state.textSize;
+      }
+
       render();
     });
   });
 
-  document.getElementById('param-color').addEventListener('input', e => state.color = e.target.value);
-  document.getElementById('param-size').addEventListener('input', e => state.size = parseInt(e.target.value));
+  function syncTextUI() {
+    const layer = state.textLayers[state.selectedTextIndex];
+    if (!layer) return;
 
-  ['pan', 'draw', 'rect', 'arrow'].forEach(tool => {
-    document.getElementById(`tool-${tool}`).addEventListener('click', (e) => {
-      document.querySelectorAll('.top-toolbar .tool-btn').forEach(b => b.classList.remove('active'));
-      e.currentTarget.classList.add('active');
-      currentTool = tool;
-      document.querySelector('.canvas-wrapper').style.pointerEvents = (tool === 'pan') ? 'none' : 'auto';
+    document.getElementById('param-text-content').value = layer.text;
+    document.getElementById('param-text-font').value = layer.font;
+    document.getElementById('param-textSize').value = layer.size;
+    document.getElementById('val-textSize').textContent = layer.size + 'px';
+    state.textSize = layer.size; // keep sidebar slider in sync
+
+    // Presets
+    document.querySelectorAll('#param-text-preset .segment-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.value === layer.preset);
     });
+
+    // Depth
+    document.querySelectorAll('#param-text-depth .segment-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.value === layer.depth);
+    });
+  }
+
+  document.getElementById('param-text-content').addEventListener('input', (e) => {
+    const layer = state.textLayers[state.selectedTextIndex];
+    if (layer) { layer.text = e.target.value; render(); }
   });
 
-  document.querySelector('.canvas-wrapper').style.pointerEvents = 'none';
+  document.getElementById('param-text-font').addEventListener('change', (e) => {
+    const layer = state.textLayers[state.selectedTextIndex];
+    if (layer) { layer.font = e.target.value; render(); }
+  });
+
+  document.getElementById('param-text-preset').addEventListener('click', (e) => {
+    if (e.target.classList.contains('segment-btn')) {
+      const layer = state.textLayers[state.selectedTextIndex];
+      if (layer) {
+        layer.preset = e.target.dataset.value;
+        if (layer.preset === 'header') layer.size = 80;
+        else if (layer.preset === 'sub') layer.size = 40;
+        else if (layer.preset === 'caption') layer.size = 20;
+        syncTextUI();
+        render();
+      }
+    }
+  });
+
+  document.getElementById('param-text-depth').addEventListener('click', (e) => {
+    if (e.target.classList.contains('segment-btn')) {
+      const layer = state.textLayers[state.selectedTextIndex];
+      if (layer) {
+        layer.depth = e.target.dataset.value;
+        syncTextUI();
+        render();
+      }
+    }
+  });
+
+  function setTool(tool) {
+    document.querySelectorAll('.top-toolbar .tool-btn').forEach(b => b.classList.remove('active'));
+    const btn = document.getElementById(`tool-${tool}`);
+    if (btn) btn.classList.add('active');
+    currentTool = tool;
+    document.querySelector('.canvas-wrapper').style.pointerEvents = (tool === 'pan') ? 'none' : 'auto';
+  }
+
+  document.getElementById('btn-add-text').addEventListener('click', () => {
+    state.textLayers.push({
+      text: 'New Text', font: "'Inter', sans-serif", preset: 'sub', size: 40, depth: 'off', x: 50, y: 50, color: '#000000', rect: null
+    });
+    state.selectedTextIndex = state.textLayers.length - 1;
+    setTool('text');
+    syncTextUI();
+    render();
+  });
+
+  document.getElementById('btn-delete-text').addEventListener('click', () => {
+    if (state.textLayers.length > 0) {
+      state.textLayers.splice(state.selectedTextIndex, 1);
+      state.selectedTextIndex = Math.max(0, state.textLayers.length - 1);
+      syncTextUI();
+      render();
+    }
+  });
+
+  document.getElementById('param-color').addEventListener('input', e => {
+    state.color = e.target.value;
+    const layer = state.textLayers[state.selectedTextIndex];
+    if (layer) layer.color = state.color;
+    render();
+  });
+  document.getElementById('param-size').addEventListener('input', e => state.size = parseInt(e.target.value));
+
+  ['pan', 'draw', 'rect', 'arrow', 'text'].forEach(tool => {
+    document.getElementById(`tool-${tool}`).addEventListener('click', () => setTool(tool));
+  });
+
+  syncTextUI();
+  setTool('pan');
 
   document.getElementById('btn-undo').addEventListener('click', undo);
   document.getElementById('btn-export').addEventListener('click', exportImage);
@@ -648,6 +745,57 @@ function getTransformMatrix() {
   return { m, w: finalCanvasW, h: finalCanvasH, drawX, drawY, innerW: baseContentW, innerH: baseContentH - frameH, frameH, cx, cy, contentScale };
 }
 
+function drawText(filterDepth) {
+  state.textLayers.forEach((layer, index) => {
+    if (!layer.text || layer.depth !== filterDepth) return;
+
+    ctx.save();
+    
+    ctx.font = `${layer.preset === 'header' ? '800' : (layer.preset === 'sub' ? '600' : '400')} ${layer.size}px ${layer.font}`;
+    ctx.fillStyle = layer.color || state.color;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    // Calculate position in pixels
+    const x = (layer.x / 100) * canvas.width;
+    const y = (layer.y / 100) * canvas.height;
+
+    // Split text by lines
+    const lines = layer.text.split('\n');
+    const lineHeight = layer.size * 1.25;
+    const totalHeight = lines.length * lineHeight;
+    
+    // Store bounding box for hit testing
+    let maxW = 0;
+    lines.forEach(line => {
+      const w = ctx.measureText(line).width;
+      if (w > maxW) maxW = w;
+    });
+    layer.rect = {
+      x: x - maxW / 2 - 10,
+      y: y - totalHeight / 2 - 10,
+      w: maxW + 20,
+      h: totalHeight + 20
+    };
+
+    // Draw Selection Highlight
+    if (state.selectedTextIndex === index && currentTool === 'text') {
+      ctx.strokeStyle = '#0066ff';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([5, 5]);
+      ctx.strokeRect(layer.rect.x, layer.rect.y, layer.rect.w, layer.rect.h);
+      ctx.setLineDash([]);
+    }
+    
+    // Draw each line
+    lines.forEach((line, i) => {
+      ctx.fillText(line, x, y - (totalHeight / 2) + (i * lineHeight) + (lineHeight / 2));
+    });
+
+    ctx.restore();
+  });
+}
+
 function render() {
   if (!originalImage) return;
 
@@ -659,15 +807,15 @@ function render() {
   if (!viewport.initialized && canvas.width > 0) {
     viewport.initialized = true;
     fitToScreen();
-  } else if (wChanged) {
-    // Optionally auto-fit when dimension changes drastically, like switching platform size.
-    // For now, keep it manual via "Fit" button unless initialization.
   }
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawBackground();
 
-  // Apply Transform
+  // Draw "Behind" Layers
+  drawText('on');
+
+  // Apply Transform for Mockup
   ctx.save();
   ctx.setTransform(t.m.a, t.m.b, t.m.c, t.m.d, t.m.e, t.m.f);
 
@@ -892,6 +1040,9 @@ function render() {
   }
 
   ctx.restore();
+
+  // Draw "Above" Layers (On Top)
+  drawText('off');
 }
 
 function roundRect(ctx, x, y, width, height, radius) {
@@ -909,6 +1060,9 @@ function roundRect(ctx, x, y, width, height, radius) {
 }
 
 // --- Interaction / Drawing Math ---
+let isDraggingText = false;
+let dragOffset = { x: 0, y: 0 };
+
 function getMousePos(evt) {
   const rect = canvas.getBoundingClientRect();
   const scaleX = canvas.width / rect.width;
@@ -929,8 +1083,42 @@ function mapToInner(pos) {
 
 canvas.addEventListener('mousedown', (e) => {
   if (!originalImage || currentTool === 'pan') return;
+  e.stopPropagation();
+  e.preventDefault();
+
+  const rawPos = getMousePos(e);
+
+  // Check Text Selection
+  if (currentTool === 'text') {
+    let hitIndex = -1;
+    // Walk backward to hit top-most first
+    for (let i = state.textLayers.length - 1; i >= 0; i--) {
+      const layer = state.textLayers[i];
+      if (layer.rect && 
+          rawPos.x >= layer.rect.x && rawPos.x <= layer.rect.x + layer.rect.w &&
+          rawPos.y >= layer.rect.y && rawPos.y <= layer.rect.y + layer.rect.h) {
+        hitIndex = i;
+        break;
+      }
+    }
+
+    if (hitIndex !== -1) {
+      state.selectedTextIndex = hitIndex;
+      isDraggingText = true;
+      const layer = state.textLayers[hitIndex];
+      const layerPX = (layer.x / 100) * canvas.width;
+      const layerPY = (layer.y / 100) * canvas.height;
+      dragOffset.x = rawPos.x - layerPX;
+      dragOffset.y = rawPos.y - layerPY;
+      syncTextUI();
+      render();
+      return;
+    }
+  }
+
+  // Fallback to normal drawing
   isDrawing = true;
-  const pos = mapToInner(getMousePos(e));
+  const pos = mapToInner(rawPos);
   startX = pos.x;
   startY = pos.y;
 
@@ -943,8 +1131,21 @@ canvas.addEventListener('mousedown', (e) => {
 });
 
 canvas.addEventListener('mousemove', (e) => {
-  if (!isDrawing) return;
   const rawPos = getMousePos(e);
+
+  if (isDraggingText) {
+    const layer = state.textLayers[state.selectedTextIndex];
+    if (layer) {
+      const newPX = rawPos.x - dragOffset.x;
+      const newPY = rawPos.y - dragOffset.y;
+      layer.x = (newPX / canvas.width) * 100;
+      layer.y = (newPY / canvas.height) * 100;
+      render();
+    }
+    return;
+  }
+
+  if (!isDrawing) return;
   const pos = mapToInner(rawPos);
 
   if (currentTool === 'draw') {
@@ -983,8 +1184,14 @@ canvas.addEventListener('mousemove', (e) => {
   }
 });
 
-canvas.addEventListener('mouseup', finishDrawing);
-canvas.addEventListener('mouseout', (e) => { if (isDrawing) finishDrawing(e); });
+canvas.addEventListener('mouseup', (e) => {
+  isDraggingText = false;
+  finishDrawing(e);
+});
+canvas.addEventListener('mouseout', (e) => {
+  isDraggingText = false;
+  if (isDrawing) finishDrawing(e);
+});
 
 function finishDrawing(e) {
   if (!isDrawing) return;
