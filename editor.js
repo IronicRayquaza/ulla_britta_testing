@@ -256,7 +256,7 @@ function initUI() {
     document.getElementById('val-textSize').textContent = layer.size + 'px';
     document.getElementById('param-text-color').value = layer.color || '#000000';
     // Shadows
-    document.getElementById('param-text-shadow-color').value = layer.shadowColor || '#00000033';
+    document.getElementById('param-text-shadow-color').value = layer.shadowColor || '#000000';
     document.querySelectorAll('.shadow-item').forEach(b => {
       b.classList.toggle('active', b.dataset.value === layer.shadowType);
     });
@@ -302,7 +302,13 @@ function initUI() {
 
   document.getElementById('param-text-font').addEventListener('change', (e) => {
     const layer = state.textLayers[state.selectedTextIndex];
-    if (layer) { layer.font = e.target.value; render(); }
+    if (layer) {
+      layer.font = e.target.value;
+      // Ensure font is loaded before rendering
+      document.fonts.load(`1em ${layer.font}`).then(() => {
+        render();
+      });
+    }
   });
 
   document.getElementById('param-text-preset').addEventListener('click', (e) => {
@@ -339,9 +345,10 @@ function initUI() {
   }
 
   document.getElementById('btn-add-text').addEventListener('click', () => {
+    const defaultFont = "'Geist', sans-serif";
     state.textLayers.push({
       text: 'New Text', 
-      font: "'Inter', sans-serif", 
+      font: defaultFont, 
       preset: 'sub', 
       size: 40, 
       depth: 'off', 
@@ -349,13 +356,15 @@ function initUI() {
       y: 50, 
       color: state.color || '#000000', 
       shadowType: 'subtle', 
-      shadowColor: '#00000033',
+      shadowColor: '#000000',
       rect: null
     });
     state.selectedTextIndex = state.textLayers.length - 1;
     setTool('text');
     syncTextUI();
-    render();
+    document.fonts.load(`1em ${defaultFont}`).then(() => {
+      render();
+    });
   });
 
   document.getElementById('btn-delete-text').addEventListener('click', () => {
@@ -559,6 +568,9 @@ chrome.storage.local.get(['latestScreenshot'], (result) => {
 
 function saveDrawState() {
   drawHistory.push(offscreenCanvas.toDataURL());
+  if (drawHistory.length > 15) {
+    drawHistory.shift();
+  }
 }
 
 function undo() {
@@ -820,7 +832,7 @@ function drawText(filterDepth) {
       ctx.shadowBlur = s.blur;
       ctx.shadowOffsetX = s.x;
       ctx.shadowOffsetY = s.y;
-      ctx.shadowColor = layer.shadowColor || '#00000033';
+      ctx.shadowColor = layer.shadowColor || 'rgba(0,0,0,0.2)';
     }
 
     // Calculate position in pixels
@@ -1304,9 +1316,8 @@ function exportImage() {
   btn.textContent = 'Processing HD Image...';
 
   setTimeout(() => {
-    const isTrans = state.bgType === 'transparent' && state.bgCategory === 'solid';
-    const extension = isTrans ? 'png' : 'jpeg';
-    const mime = isTrans ? 'image/png' : 'image/jpeg';
+    const mime = 'image/png';
+    const extension = 'png';
 
     const a = document.createElement('a');
     a.href = canvas.toDataURL(mime, 1.0);

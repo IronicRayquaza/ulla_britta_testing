@@ -4,7 +4,7 @@
   <title>4K Screenshot Studio</title>
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self';">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=Playfair+Display:wght@700&family=JetBrains+Mono:wght@500&family=Bungee&family=Outfit:wght@400;600;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Audiowide&family=Birthstone&family=Cinzel:wght@400..900&family=Geist:wght@100..900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Oswald:wght@200..700&display=swap');
 
     :root {
       --bg: #ffffff;
@@ -18,7 +18,7 @@
     * { box-sizing: border-box; }
     body {
       margin: 0; padding: 0; background: var(--bg); color: var(--text);
-      font-family: 'Inter', system-ui, sans-serif; display: flex;
+      font-family: 'Geist', system-ui, sans-serif; display: flex;
       height: 100vh; overflow: hidden;
     }
 
@@ -250,7 +250,7 @@
           </div>
           <div class="color-field">
             <div class="control-label">Shadow Color</div>
-            <input type="color" id="param-text-shadow-color" class="color-picker" style="width: 100%; height: 38px; margin-left: 0;" value="#00000033">
+            <input type="color" id="param-text-shadow-color" class="color-picker" style="width: 100%; height: 38px; margin-left: 0;" value="#000000">
           </div>
         </div>
 
@@ -299,12 +299,15 @@
     <div class="divider-y"></div>
     
     <input type="text" id="param-text-content" class="select-input" style="width: 140px; height: 32px;" placeholder="Text content...">
-    <select id="param-text-font" class="select-input" style="width: 120px; height: 32px; padding: 4px 8px;">
-      <option value="'Inter', sans-serif">Sans</option>
-      <option value="'Playfair Display', serif">Serif</option>
-      <option value="'JetBrains Mono', monospace">Mono</option>
-      <option value="'Bungee', cursive">Display</option>
-      <option value="'Outfit', sans-serif">Modern</option>
+    <select id="param-text-font" class="select-input" style="width: 140px; height: 32px; padding: 4px 8px;">
+      <option value="'Geist', sans-serif" style="font-family: 'Geist', sans-serif">Geist (Modern)</option>
+      <option value="'Montserrat', sans-serif" style="font-family: 'Montserrat', sans-serif">Montserrat</option>
+      <option value="'Nunito', sans-serif" style="font-family: 'Nunito', sans-serif">Nunito (Rounded)</option>
+      <option value="'Lato', sans-serif" style="font-family: 'Lato', sans-serif">Lato</option>
+      <option value="'Oswald', sans-serif" style="font-family: 'Oswald', sans-serif">Oswald (Bold)</option>
+      <option value="'Cinzel', serif" style="font-family: 'Cinzel', serif">Cinzel (Classic)</option>
+      <option value="'Audiowide', cursive" style="font-family: 'Audiowide', cursive">Audiowide</option>
+      <option value="'Birthstone', cursive" style="font-family: 'Birthstone', cursive">Birthstone (Script)</option>
     </select>
     <button id="btn-add-text" class="tool-btn" title="Add New Text" style="background:#000; color:#fff; padding: 4px 10px; font-size: 11px; font-weight: 600;">+ Add</button>
 
