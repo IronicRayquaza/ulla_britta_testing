@@ -28,10 +28,22 @@ let state = {
   shadow: 40,
   color: '#000000',
   size: 4,
-  textLayers: [
-    { text: 'Sample Text', font: "'Inter', sans-serif", preset: 'header', size: 80, depth: 'off', x: 50, y: 20, color: '#000000', rect: null }
-  ],
-  selectedTextIndex: 0
+  textLayers: [],
+  selectedTextIndex: -1,
+  annotations: []
+};
+
+const shadowPresets = {
+  'none': { blur: 0, x: 0, y: 0 },
+  'subtle': { blur: 4, x: 2, y: 2 },
+  'soft': { blur: 10, x: 0, y: 0 },
+  'sharp': { blur: 0, x: 4, y: 4 },
+  'floating': { blur: 15, x: 5, y: 10 },
+  'hard': { blur: 1, x: 2, y: 2 },
+  'deep': { blur: 20, x: 10, y: 15 },
+  'retro': { blur: 0, x: -6, y: 6 },
+  'double': { blur: 2, x: 4, y: -4 },
+  'neon': { blur: 15, x: 0, y: 0 }
 };
 
 const patternCache = {};
@@ -78,7 +90,17 @@ const bgCollections = {
     { type: 'gradient', name: 'Silver', value: { style: 'radial', colors: ['#bdc3c7', '#2c3e50'] } },
     { type: 'gradient', name: 'Electric', value: { style: 'conic', colors: ['#4facfe', '#f093fb', '#4facfe'] } },
     { type: 'gradient', name: 'Sunset', value: { style: 'linear', colors: ['#fe8c00', '#f83600'], angle: 180 } },
-    { type: 'gradient', name: 'Galaxy', value: { style: 'mesh', colors: ['#3A1C71', '#D76D77', '#FFAF7B', '#8E2DE2'] } }
+    { type: 'gradient', name: 'Galaxy', value: { style: 'mesh', colors: ['#3A1C71', '#D76D77', '#FFAF7B', '#8E2DE2'] } },
+    { type: 'gradient', name: 'Holographic', value: { style: 'mesh', colors: ['#fdfbfb', '#a1c4fd', '#fbc2eb', '#ffffff'] } },
+    { type: 'gradient', name: 'Cyberpunk', value: { style: 'mesh', colors: ['#000000', '#ff0055', '#3300ff', '#00ffd5'] } },
+    { type: 'gradient', name: 'Synthwave', value: { style: 'linear', colors: ['#2e026d', '#bc13fe', '#ff4545'], angle: 180 } },
+    { type: 'gradient', name: 'Deep Sea', value: { style: 'radial', colors: ['#014f86', '#012a4a', '#89c2d9'] } },
+    { type: 'gradient', name: 'Aurora', value: { style: 'mesh', colors: ['#000000', '#00ff55', '#0055ff', '#ff0055'] } },
+    { type: 'gradient', name: 'Golden Hour', value: { style: 'conic', colors: ['#ff9966', '#ff5e62', '#ffd700'] } },
+    { type: 'gradient', name: 'Magma', value: { style: 'mesh', colors: ['#121212', '#8b0000', '#ff4500', '#2d2d2d'] } },
+    { type: 'gradient', name: 'Pastel Dream', value: { style: 'mesh', colors: ['#ff9a9e', '#fecfef', '#a1c4fd', '#e0f0ff'] } },
+    { type: 'gradient', name: 'Midnight City', value: { style: 'linear', colors: ['#232526', '#414345', '#00d2ff'], angle: 45 } },
+    { type: 'gradient', name: 'Black Hole', value: { style: 'radial', colors: ['#000000', '#1a1a1a', '#ff0000'] } }
   ],
   solid: [
     { type: 'transparent', name: 'Trans', value: [] },
@@ -232,7 +254,14 @@ function initUI() {
     document.getElementById('param-text-font').value = layer.font;
     document.getElementById('param-textSize').value = layer.size;
     document.getElementById('val-textSize').textContent = layer.size + 'px';
-    state.textSize = layer.size; // keep sidebar slider in sync
+    document.getElementById('param-text-color').value = layer.color || '#000000';
+    // Shadows
+    document.getElementById('param-text-shadow-color').value = layer.shadowColor || '#00000033';
+    document.querySelectorAll('.shadow-item').forEach(b => {
+      b.classList.toggle('active', b.dataset.value === layer.shadowType);
+    });
+
+    state.textSize = layer.size;
 
     // Presets
     document.querySelectorAll('#param-text-preset .segment-btn').forEach(b => {
@@ -244,6 +273,27 @@ function initUI() {
       b.classList.toggle('active', b.dataset.value === layer.depth);
     });
   }
+
+  document.getElementById('param-text-color').addEventListener('input', (e) => {
+    const layer = state.textLayers[state.selectedTextIndex];
+    if (layer) { layer.color = e.target.value; render(); }
+  });
+
+  document.getElementById('param-text-shadow-grid').addEventListener('click', (e) => {
+    if (e.target.classList.contains('shadow-item')) {
+      const layer = state.textLayers[state.selectedTextIndex];
+      if (layer) {
+        layer.shadowType = e.target.dataset.value;
+        syncTextUI();
+        render();
+      }
+    }
+  });
+
+  document.getElementById('param-text-shadow-color').addEventListener('input', (e) => {
+    const layer = state.textLayers[state.selectedTextIndex];
+    if (layer) { layer.shadowColor = e.target.value; render(); }
+  });
 
   document.getElementById('param-text-content').addEventListener('input', (e) => {
     const layer = state.textLayers[state.selectedTextIndex];
@@ -290,7 +340,17 @@ function initUI() {
 
   document.getElementById('btn-add-text').addEventListener('click', () => {
     state.textLayers.push({
-      text: 'New Text', font: "'Inter', sans-serif", preset: 'sub', size: 40, depth: 'off', x: 50, y: 50, color: '#000000', rect: null
+      text: 'New Text', 
+      font: "'Inter', sans-serif", 
+      preset: 'sub', 
+      size: 40, 
+      depth: 'off', 
+      x: 50, 
+      y: 50, 
+      color: state.color || '#000000', 
+      shadowType: 'subtle', 
+      shadowColor: '#00000033',
+      rect: null
     });
     state.selectedTextIndex = state.textLayers.length - 1;
     setTool('text');
@@ -301,7 +361,7 @@ function initUI() {
   document.getElementById('btn-delete-text').addEventListener('click', () => {
     if (state.textLayers.length > 0) {
       state.textLayers.splice(state.selectedTextIndex, 1);
-      state.selectedTextIndex = Math.max(0, state.textLayers.length - 1);
+      state.selectedTextIndex = Math.max(-1, state.textLayers.length - 1);
       syncTextUI();
       render();
     }
@@ -309,8 +369,6 @@ function initUI() {
 
   document.getElementById('param-color').addEventListener('input', e => {
     state.color = e.target.value;
-    const layer = state.textLayers[state.selectedTextIndex];
-    if (layer) layer.color = state.color;
     render();
   });
   document.getElementById('param-size').addEventListener('input', e => state.size = parseInt(e.target.value));
@@ -752,9 +810,18 @@ function drawText(filterDepth) {
     ctx.save();
     
     ctx.font = `${layer.preset === 'header' ? '800' : (layer.preset === 'sub' ? '600' : '400')} ${layer.size}px ${layer.font}`;
-    ctx.fillStyle = layer.color || state.color;
+    ctx.fillStyle = layer.color || state.color || '#000000';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
+
+    // Apply Shadows
+    if (layer.shadowType && layer.shadowType !== 'none' && shadowPresets[layer.shadowType]) {
+      const s = shadowPresets[layer.shadowType];
+      ctx.shadowBlur = s.blur;
+      ctx.shadowOffsetX = s.x;
+      ctx.shadowOffsetY = s.y;
+      ctx.shadowColor = layer.shadowColor || '#00000033';
+    }
 
     // Calculate position in pixels
     const x = (layer.x / 100) * canvas.width;
@@ -778,20 +845,70 @@ function drawText(filterDepth) {
       h: totalHeight + 20
     };
 
-    // Draw Selection Highlight
+    // Draw each line
+    lines.forEach((line, i) => {
+      ctx.fillText(line, x, y - (totalHeight / 2) + (i * lineHeight) + (lineHeight / 2));
+    });
+
+    // Draw Selection Highlight (WITHOUT SHADOW)
     if (state.selectedTextIndex === index && currentTool === 'text') {
+      ctx.shadowColor = 'transparent'; // Disable shadow for the highlight
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+      
       ctx.strokeStyle = '#0066ff';
       ctx.lineWidth = 2;
       ctx.setLineDash([5, 5]);
       ctx.strokeRect(layer.rect.x, layer.rect.y, layer.rect.w, layer.rect.h);
       ctx.setLineDash([]);
     }
-    
-    // Draw each line
-    lines.forEach((line, i) => {
-      ctx.fillText(line, x, y - (totalHeight / 2) + (i * lineHeight) + (lineHeight / 2));
-    });
 
+    ctx.restore();
+  });
+}
+
+function drawAnnotations() {
+  state.annotations.forEach(ann => {
+    ctx.save();
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = ann.color;
+    ctx.lineWidth = ann.size;
+
+    if (ann.type === 'draw') {
+      if (!ann.points || ann.points.length < 2) { ctx.restore(); return; }
+      ctx.beginPath();
+      ctx.moveTo((ann.points[0].x / 100) * canvas.width, (ann.points[0].y / 100) * canvas.height);
+      for (let i = 1; i < ann.points.length; i++) {
+        ctx.lineTo((ann.points[i].x / 100) * canvas.width, (ann.points[i].y / 100) * canvas.height);
+      }
+      ctx.stroke();
+    } else if (ann.type === 'rect') {
+      const x1 = (ann.x1 / 100) * canvas.width;
+      const y1 = (ann.y1 / 100) * canvas.height;
+      const x2 = (ann.x2 / 100) * canvas.width;
+      const y2 = (ann.y2 / 100) * canvas.height;
+      ctx.strokeRect(x1, y1, x2 - x1, y2 - y1);
+    } else if (ann.type === 'arrow') {
+      const x1 = (ann.x1 / 100) * canvas.width;
+      const y1 = (ann.y1 / 100) * canvas.height;
+      const x2 = (ann.x2 / 100) * canvas.width;
+      const y2 = (ann.y2 / 100) * canvas.height;
+      
+      const headlen = 15 + ann.size;
+      const dx = x2 - x1;
+      const dy = y2 - y1;
+      const angle = Math.atan2(dy, dx);
+
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.lineTo(x2 - headlen * Math.cos(angle - Math.PI / 6), y2 - headlen * Math.sin(angle - Math.PI / 6));
+      ctx.moveTo(x2, y2);
+      ctx.lineTo(x2 - headlen * Math.cos(angle + Math.PI / 6), y2 - headlen * Math.sin(angle + Math.PI / 6));
+      ctx.stroke();
+    }
     ctx.restore();
   });
 }
@@ -800,7 +917,6 @@ function render() {
   if (!originalImage) return;
 
   const t = getTransformMatrix();
-  const wChanged = canvas.width !== t.w || canvas.height !== t.h;
   canvas.width = t.w;
   canvas.height = t.h;
 
@@ -921,7 +1037,6 @@ function render() {
         ctx.font = '14px sans-serif';
         ctx.fillText('—  ☐  ✕', t.innerW - 75, curDrawY + 28);
       } else if (isBrowser) {
-        // Modern Browser Address Bar
         const barY = curDrawY + 36;
         ctx.fillStyle = '#E8EAED';
         ctx.beginPath();
@@ -930,13 +1045,11 @@ function render() {
         ctx.fillStyle = '#9AA0A6';
         ctx.font = '12px sans-serif';
         ctx.fillText('google.com', 100, barY + 4);
-        // Dots
         ctx.fillStyle = '#BDC1C6';
         ctx.beginPath(); ctx.arc(25, barY, 4, 0, Math.PI * 2); ctx.fill();
         ctx.beginPath(); ctx.arc(43, barY, 4, 0, Math.PI * 2); ctx.fill();
         ctx.beginPath(); ctx.arc(61, barY, 4, 0, Math.PI * 2); ctx.fill();
       } else if (isMinimal) {
-        // Just a thin pill handle
         ctx.fillStyle = '#E0E0E0';
         ctx.beginPath();
         roundRect(ctx, t.innerW / 2 - 30, curDrawY + 12, 60, 8, 4);
@@ -947,13 +1060,11 @@ function render() {
     // Render Image
     ctx.drawImage(offscreenCanvas, 0, 0);
 
-    // Apply Tint for trailing cascade layers
     if (tintOpacity > 0) {
       ctx.fillStyle = `rgba(0,0,0,${tintOpacity})`;
       ctx.fillRect(0, curDrawY, t.innerW, totalInnerH);
     }
 
-    // Frame Outline
     if (state.bgType !== 'transparent') {
       ctx.strokeStyle = 'rgba(0,0,0,0.1)';
       ctx.lineWidth = 1;
@@ -974,7 +1085,6 @@ function render() {
     else if (state.transform === 'stack-iso-left') { spacingX = -160; spacingY = -160; }
     else if (state.transform === 'stack-iso-right') { spacingX = 160; spacingY = -160; }
     else if (state.transform === 'stack-stand') { spacingX = -100; spacingY = -200; }
-
     drawScreenshotLayer(spacingX, spacingY, 1, 0.45, 0);
     drawScreenshotLayer(spacingX * 0.5, spacingY * 0.5, 1, 0.20, 0);
     drawScreenshotLayer(0, 0, 1, 0, 0);
@@ -985,13 +1095,11 @@ function render() {
       ctx.translate(shiftX, shiftY);
       ctx.scale(0.85, 0.85);
       ctx.transform(1, angle, 0, 1, 0, 0);
-
       ctx.save();
       roundRect(ctx, 0, curDrawY + (idx * sliceH), t.innerW, sliceH, idx === 0 ? state.radius : 0);
       ctx.clip();
       ctx.drawImage(offscreenCanvas, 0, 0);
       ctx.restore();
-
       ctx.strokeStyle = 'rgba(0,0,0,0.1)';
       ctx.lineWidth = 2;
       roundRect(ctx, 0, curDrawY + (idx * sliceH), t.innerW, sliceH, 0);
@@ -1019,13 +1127,11 @@ function render() {
   } else if (state.transform === 'reflect-3d') {
     drawScreenshotLayer(0, 0, 1, 0, 0);
     ctx.save();
-    // Increase translation to 2.15 to add a physical gap between product and reflection
     ctx.translate(0, (totalInnerH * 2.15) - t.frameH);
     ctx.scale(1, -1);
     const grad = ctx.createLinearGradient(0, curDrawY, 0, curDrawY + totalInnerH);
     grad.addColorStop(0, 'rgba(0,0,0,0.4)');
     grad.addColorStop(0.5, 'rgba(0,0,0,0)');
-
     ctx.save();
     roundRect(ctx, 0, curDrawY, t.innerW, totalInnerH, state.radius);
     ctx.clip();
@@ -1040,6 +1146,8 @@ function render() {
   }
 
   ctx.restore();
+
+  drawAnnotations();
 
   // Draw "Above" Layers (On Top)
   drawText('off');
@@ -1073,14 +1181,6 @@ function getMousePos(evt) {
   };
 }
 
-function mapToInner(pos) {
-  const t = getTransformMatrix();
-  const inv = t.m.inverse();
-  const pt = new DOMPoint(pos.x, pos.y);
-  const transPt = pt.matrixTransform(inv);
-  return { x: transPt.x, y: transPt.y };
-}
-
 canvas.addEventListener('mousedown', (e) => {
   if (!originalImage || currentTool === 'pan') return;
   e.stopPropagation();
@@ -1091,7 +1191,6 @@ canvas.addEventListener('mousedown', (e) => {
   // Check Text Selection
   if (currentTool === 'text') {
     let hitIndex = -1;
-    // Walk backward to hit top-most first
     for (let i = state.textLayers.length - 1; i >= 0; i--) {
       const layer = state.textLayers[i];
       if (layer.rect && 
@@ -1113,21 +1212,29 @@ canvas.addEventListener('mousedown', (e) => {
       syncTextUI();
       render();
       return;
+    } else {
+      state.selectedTextIndex = -1;
+      syncTextUI();
+      render();
     }
   }
 
-  // Fallback to normal drawing
-  isDrawing = true;
-  const pos = mapToInner(rawPos);
-  startX = pos.x;
-  startY = pos.y;
-
-  offscreenCtx.beginPath();
-  offscreenCtx.moveTo(startX, startY);
-  offscreenCtx.lineCap = 'round';
-  offscreenCtx.lineJoin = 'round';
-  offscreenCtx.strokeStyle = state.color;
-  offscreenCtx.lineWidth = state.size;
+  // Annotation Start
+  if (['draw', 'rect', 'arrow'].includes(currentTool)) {
+    isDrawing = true;
+    const px = (rawPos.x / canvas.width) * 100;
+    const py = (rawPos.y / canvas.height) * 100;
+    
+    currentAnnotation = {
+      type: currentTool,
+      color: state.color,
+      size: state.size,
+      x1: px, y1: py,
+      x2: px, y2: py,
+      points: [{ x: px, y: py }]
+    };
+    state.annotations.push(currentAnnotation);
+  }
 });
 
 canvas.addEventListener('mousemove', (e) => {
@@ -1145,86 +1252,49 @@ canvas.addEventListener('mousemove', (e) => {
     return;
   }
 
-  if (!isDrawing) return;
-  const pos = mapToInner(rawPos);
+  if (!isDrawing || !currentAnnotation) return;
 
-  if (currentTool === 'draw') {
-    offscreenCtx.lineTo(pos.x, pos.y);
-    offscreenCtx.stroke();
-    render();
+  const px = (rawPos.x / canvas.width) * 100;
+  const py = (rawPos.y / canvas.height) * 100;
+
+  if (currentAnnotation.type === 'draw') {
+    currentAnnotation.points.push({ x: px, y: py });
   } else {
-    render();
-
-    const t = getTransformMatrix();
-    ctx.save();
-    ctx.setTransform(t.m.a, t.m.b, t.m.c, t.m.d, t.m.e, t.m.f);
-
-    ctx.beginPath();
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-    ctx.strokeStyle = state.color;
-    ctx.lineWidth = state.size;
-
-    if (currentTool === 'rect') {
-      ctx.strokeRect(startX, startY, pos.x - startX, pos.y - startY);
-    } else if (currentTool === 'arrow') {
-      const headlen = 15 + state.size;
-      const dx = pos.x - startX;
-      const dy = pos.y - startY;
-      const angle = Math.atan2(dy, dx);
-
-      ctx.moveTo(startX, startY);
-      ctx.lineTo(pos.x, pos.y);
-      ctx.lineTo(pos.x - headlen * Math.cos(angle - Math.PI / 6), pos.y - headlen * Math.sin(angle - Math.PI / 6));
-      ctx.moveTo(pos.x, pos.y);
-      ctx.lineTo(pos.x - headlen * Math.cos(angle + Math.PI / 6), pos.y - headlen * Math.sin(angle + Math.PI / 6));
-      ctx.stroke();
-    }
-    ctx.restore();
+    currentAnnotation.x2 = px;
+    currentAnnotation.y2 = py;
   }
-});
-
-canvas.addEventListener('mouseup', (e) => {
-  isDraggingText = false;
-  finishDrawing(e);
-});
-canvas.addEventListener('mouseout', (e) => {
-  isDraggingText = false;
-  if (isDrawing) finishDrawing(e);
-});
-
-function finishDrawing(e) {
-  if (!isDrawing) return;
-  isDrawing = false;
-
-  if (currentTool !== 'draw') {
-    const pos = mapToInner(getMousePos(e));
-
-    offscreenCtx.beginPath();
-    offscreenCtx.lineCap = 'round';
-    offscreenCtx.lineJoin = 'round';
-    offscreenCtx.strokeStyle = state.color;
-    offscreenCtx.lineWidth = state.size;
-
-    if (currentTool === 'rect') {
-      offscreenCtx.strokeRect(startX, startY, pos.x - startX, pos.y - startY);
-    } else if (currentTool === 'arrow') {
-      const headlen = 15 + state.size;
-      const dx = pos.x - startX;
-      const dy = pos.y - startY;
-      const angle = Math.atan2(dy, dx);
-
-      offscreenCtx.moveTo(startX, startY);
-      offscreenCtx.lineTo(pos.x, pos.y);
-      offscreenCtx.lineTo(pos.x - headlen * Math.cos(angle - Math.PI / 6), pos.y - headlen * Math.sin(angle - Math.PI / 6));
-      offscreenCtx.moveTo(pos.x, pos.y);
-      offscreenCtx.lineTo(pos.x - headlen * Math.cos(angle + Math.PI / 6), pos.y - headlen * Math.sin(angle + Math.PI / 6));
-      offscreenCtx.stroke();
-    }
-  }
-
-  saveDrawState();
   render();
+});
+
+canvas.addEventListener('mouseup', () => {
+  if (isDrawing) saveDrawState();
+  isDrawing = false;
+  isDraggingText = false;
+  currentAnnotation = null;
+});
+
+canvas.addEventListener('mouseout', () => {
+  if (isDrawing) saveDrawState();
+  isDrawing = false;
+  isDraggingText = false;
+  currentAnnotation = null;
+});
+
+function saveDrawState() {
+  // Push state for undo if needed
+  render();
+}
+
+function undo() {
+  if (state.annotations.length > 0) {
+    state.annotations.pop();
+    render();
+  } else if (state.textLayers.length > 0) {
+    state.textLayers.pop();
+    state.selectedTextIndex = state.textLayers.length - 1;
+    syncTextUI();
+    render();
+  }
 }
 
 // --- Export Action ---
