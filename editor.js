@@ -26,8 +26,24 @@ let state = {
   scaleImage: 100,
   radius: 16,
   shadow: 40,
-  color: '#ff3366',
-  size: 4
+  color: '#000000',
+  size: 4,
+  textLayers: [],
+  selectedTextIndex: -1,
+  annotations: []
+};
+
+const shadowPresets = {
+  'none': { blur: 0, x: 0, y: 0 },
+  'subtle': { blur: 4, x: 2, y: 2 },
+  'soft': { blur: 10, x: 0, y: 0 },
+  'sharp': { blur: 0, x: 4, y: 4 },
+  'floating': { blur: 15, x: 5, y: 10 },
+  'hard': { blur: 1, x: 2, y: 2 },
+  'deep': { blur: 20, x: 10, y: 15 },
+  'retro': { blur: 0, x: -6, y: 6 },
+  'double': { blur: 2, x: 4, y: -4 },
+  'neon': { blur: 15, x: 0, y: 0 }
 };
 
 const patternCache = {};
@@ -74,7 +90,17 @@ const bgCollections = {
     { type: 'gradient', name: 'Silver', value: { style: 'radial', colors: ['#bdc3c7', '#2c3e50'] } },
     { type: 'gradient', name: 'Electric', value: { style: 'conic', colors: ['#4facfe', '#f093fb', '#4facfe'] } },
     { type: 'gradient', name: 'Sunset', value: { style: 'linear', colors: ['#fe8c00', '#f83600'], angle: 180 } },
-    { type: 'gradient', name: 'Galaxy', value: { style: 'mesh', colors: ['#3A1C71', '#D76D77', '#FFAF7B', '#8E2DE2'] } }
+    { type: 'gradient', name: 'Galaxy', value: { style: 'mesh', colors: ['#3A1C71', '#D76D77', '#FFAF7B', '#8E2DE2'] } },
+    { type: 'gradient', name: 'Holographic', value: { style: 'mesh', colors: ['#fdfbfb', '#a1c4fd', '#fbc2eb', '#ffffff'] } },
+    { type: 'gradient', name: 'Cyberpunk', value: { style: 'mesh', colors: ['#000000', '#ff0055', '#3300ff', '#00ffd5'] } },
+    { type: 'gradient', name: 'Synthwave', value: { style: 'linear', colors: ['#2e026d', '#bc13fe', '#ff4545'], angle: 180 } },
+    { type: 'gradient', name: 'Deep Sea', value: { style: 'radial', colors: ['#014f86', '#012a4a', '#89c2d9'] } },
+    { type: 'gradient', name: 'Aurora', value: { style: 'mesh', colors: ['#000000', '#00ff55', '#0055ff', '#ff0055'] } },
+    { type: 'gradient', name: 'Golden Hour', value: { style: 'conic', colors: ['#ff9966', '#ff5e62', '#ffd700'] } },
+    { type: 'gradient', name: 'Magma', value: { style: 'mesh', colors: ['#121212', '#8b0000', '#ff4500', '#2d2d2d'] } },
+    { type: 'gradient', name: 'Pastel Dream', value: { style: 'mesh', colors: ['#ff9a9e', '#fecfef', '#a1c4fd', '#e0f0ff'] } },
+    { type: 'gradient', name: 'Midnight City', value: { style: 'linear', colors: ['#232526', '#414345', '#00d2ff'], angle: 45 } },
+    { type: 'gradient', name: 'Black Hole', value: { style: 'radial', colors: ['#000000', '#1a1a1a', '#ff0000'] } }
   ],
   solid: [
     { type: 'transparent', name: 'Trans', value: [] },
@@ -199,31 +225,169 @@ function initUI() {
     }
   });
 
-  ['padding', 'radius', 'shadow', 'offsetX', 'offsetY', 'scaleImage'].forEach(param => {
+  ['padding', 'radius', 'shadow', 'offsetX', 'offsetY', 'scaleImage', 'textSize'].forEach(param => {
     const input = document.getElementById(`param-${param}`);
     if (!input) return;
     input.addEventListener('input', (e) => {
       state[param] = parseInt(e.target.value);
       let suffix = 'px';
       if (param === 'shadow' || param === 'offsetX' || param === 'offsetY' || param === 'scaleImage') suffix = '%';
-      document.getElementById(`val-${param}`).textContent = state[param] + suffix;
+      if (param === 'textSize') suffix = 'px';
+
+      const label = document.getElementById(`val-${param}`);
+      if (label) label.textContent = state[param] + suffix;
+
+      if (param === 'textSize') {
+        const layer = state.textLayers[state.selectedTextIndex];
+        if (layer) layer.size = state.textSize;
+      }
+
       render();
     });
   });
 
-  document.getElementById('param-color').addEventListener('input', e => state.color = e.target.value);
-  document.getElementById('param-size').addEventListener('input', e => state.size = parseInt(e.target.value));
+  function syncTextUI() {
+    const layer = state.textLayers[state.selectedTextIndex];
+    if (!layer) return;
 
-  ['pan', 'draw', 'rect', 'arrow'].forEach(tool => {
-    document.getElementById(`tool-${tool}`).addEventListener('click', (e) => {
-      document.querySelectorAll('.top-toolbar .tool-btn').forEach(b => b.classList.remove('active'));
-      e.currentTarget.classList.add('active');
-      currentTool = tool;
-      document.querySelector('.canvas-wrapper').style.pointerEvents = (tool === 'pan') ? 'none' : 'auto';
+    document.getElementById('param-text-content').value = layer.text;
+    document.getElementById('param-text-font').value = layer.font;
+    document.getElementById('param-textSize').value = layer.size;
+    document.getElementById('val-textSize').textContent = layer.size + 'px';
+    document.getElementById('param-text-color').value = layer.color || '#000000';
+    // Shadows
+    document.getElementById('param-text-shadow-color').value = layer.shadowColor || '#000000';
+    document.querySelectorAll('.shadow-item').forEach(b => {
+      b.classList.toggle('active', b.dataset.value === layer.shadowType);
+    });
+
+    state.textSize = layer.size;
+
+    // Presets
+    document.querySelectorAll('#param-text-preset .segment-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.value === layer.preset);
+    });
+
+    // Depth
+    document.querySelectorAll('#param-text-depth .segment-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.value === layer.depth);
+    });
+  }
+
+  document.getElementById('param-text-color').addEventListener('input', (e) => {
+    const layer = state.textLayers[state.selectedTextIndex];
+    if (layer) { layer.color = e.target.value; render(); }
+  });
+
+  document.getElementById('param-text-shadow-grid').addEventListener('click', (e) => {
+    if (e.target.classList.contains('shadow-item')) {
+      const layer = state.textLayers[state.selectedTextIndex];
+      if (layer) {
+        layer.shadowType = e.target.dataset.value;
+        syncTextUI();
+        render();
+      }
+    }
+  });
+
+  document.getElementById('param-text-shadow-color').addEventListener('input', (e) => {
+    const layer = state.textLayers[state.selectedTextIndex];
+    if (layer) { layer.shadowColor = e.target.value; render(); }
+  });
+
+  document.getElementById('param-text-content').addEventListener('input', (e) => {
+    const layer = state.textLayers[state.selectedTextIndex];
+    if (layer) { layer.text = e.target.value; render(); }
+  });
+
+  document.getElementById('param-text-font').addEventListener('change', (e) => {
+    const layer = state.textLayers[state.selectedTextIndex];
+    if (layer) {
+      layer.font = e.target.value;
+      // Ensure font is loaded before rendering
+      document.fonts.load(`1em ${layer.font}`).then(() => {
+        render();
+      });
+    }
+  });
+
+  document.getElementById('param-text-preset').addEventListener('click', (e) => {
+    if (e.target.classList.contains('segment-btn')) {
+      const layer = state.textLayers[state.selectedTextIndex];
+      if (layer) {
+        layer.preset = e.target.dataset.value;
+        if (layer.preset === 'header') layer.size = 80;
+        else if (layer.preset === 'sub') layer.size = 40;
+        else if (layer.preset === 'caption') layer.size = 20;
+        syncTextUI();
+        render();
+      }
+    }
+  });
+
+  document.getElementById('param-text-depth').addEventListener('click', (e) => {
+    if (e.target.classList.contains('segment-btn')) {
+      const layer = state.textLayers[state.selectedTextIndex];
+      if (layer) {
+        layer.depth = e.target.dataset.value;
+        syncTextUI();
+        render();
+      }
+    }
+  });
+
+  function setTool(tool) {
+    document.querySelectorAll('.top-toolbar .tool-btn').forEach(b => b.classList.remove('active'));
+    const btn = document.getElementById(`tool-${tool}`);
+    if (btn) btn.classList.add('active');
+    currentTool = tool;
+    document.querySelector('.canvas-wrapper').style.pointerEvents = (tool === 'pan') ? 'none' : 'auto';
+  }
+
+  document.getElementById('btn-add-text').addEventListener('click', () => {
+    const defaultFont = "'Geist', sans-serif";
+    state.textLayers.push({
+      text: 'New Text', 
+      font: defaultFont, 
+      preset: 'sub', 
+      size: 40, 
+      depth: 'off', 
+      x: 50, 
+      y: 50, 
+      color: state.color || '#000000', 
+      shadowType: 'subtle', 
+      shadowColor: '#000000',
+      rect: null
+    });
+    state.selectedTextIndex = state.textLayers.length - 1;
+    setTool('text');
+    syncTextUI();
+    document.fonts.load(`1em ${defaultFont}`).then(() => {
+      render();
     });
   });
 
-  document.querySelector('.canvas-wrapper').style.pointerEvents = 'none';
+  document.getElementById('btn-delete-text').addEventListener('click', () => {
+    if (state.textLayers.length > 0) {
+      state.textLayers.splice(state.selectedTextIndex, 1);
+      state.selectedTextIndex = Math.max(-1, state.textLayers.length - 1);
+      syncTextUI();
+      render();
+    }
+  });
+
+  document.getElementById('param-color').addEventListener('input', e => {
+    state.color = e.target.value;
+    render();
+  });
+  document.getElementById('param-size').addEventListener('input', e => state.size = parseInt(e.target.value));
+
+  ['pan', 'draw', 'rect', 'arrow', 'text'].forEach(tool => {
+    document.getElementById(`tool-${tool}`).addEventListener('click', () => setTool(tool));
+  });
+
+  syncTextUI();
+  setTool('pan');
 
   document.getElementById('btn-undo').addEventListener('click', undo);
   document.getElementById('btn-export').addEventListener('click', exportImage);
@@ -404,6 +568,9 @@ chrome.storage.local.get(['latestScreenshot'], (result) => {
 
 function saveDrawState() {
   drawHistory.push(offscreenCanvas.toDataURL());
+  if (drawHistory.length > 15) {
+    drawHistory.shift();
+  }
 }
 
 function undo() {
@@ -648,26 +815,135 @@ function getTransformMatrix() {
   return { m, w: finalCanvasW, h: finalCanvasH, drawX, drawY, innerW: baseContentW, innerH: baseContentH - frameH, frameH, cx, cy, contentScale };
 }
 
+function drawText(filterDepth) {
+  state.textLayers.forEach((layer, index) => {
+    if (!layer.text || layer.depth !== filterDepth) return;
+
+    ctx.save();
+    
+    ctx.font = `${layer.preset === 'header' ? '800' : (layer.preset === 'sub' ? '600' : '400')} ${layer.size}px ${layer.font}`;
+    ctx.fillStyle = layer.color || state.color || '#000000';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    // Apply Shadows
+    if (layer.shadowType && layer.shadowType !== 'none' && shadowPresets[layer.shadowType]) {
+      const s = shadowPresets[layer.shadowType];
+      ctx.shadowBlur = s.blur;
+      ctx.shadowOffsetX = s.x;
+      ctx.shadowOffsetY = s.y;
+      ctx.shadowColor = layer.shadowColor || 'rgba(0,0,0,0.2)';
+    }
+
+    // Calculate position in pixels
+    const x = (layer.x / 100) * canvas.width;
+    const y = (layer.y / 100) * canvas.height;
+
+    // Split text by lines
+    const lines = layer.text.split('\n');
+    const lineHeight = layer.size * 1.25;
+    const totalHeight = lines.length * lineHeight;
+    
+    // Store bounding box for hit testing
+    let maxW = 0;
+    lines.forEach(line => {
+      const w = ctx.measureText(line).width;
+      if (w > maxW) maxW = w;
+    });
+    layer.rect = {
+      x: x - maxW / 2 - 10,
+      y: y - totalHeight / 2 - 10,
+      w: maxW + 20,
+      h: totalHeight + 20
+    };
+
+    // Draw each line
+    lines.forEach((line, i) => {
+      ctx.fillText(line, x, y - (totalHeight / 2) + (i * lineHeight) + (lineHeight / 2));
+    });
+
+    // Draw Selection Highlight (WITHOUT SHADOW)
+    if (state.selectedTextIndex === index && currentTool === 'text') {
+      ctx.shadowColor = 'transparent'; // Disable shadow for the highlight
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+      
+      ctx.strokeStyle = '#0066ff';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([5, 5]);
+      ctx.strokeRect(layer.rect.x, layer.rect.y, layer.rect.w, layer.rect.h);
+      ctx.setLineDash([]);
+    }
+
+    ctx.restore();
+  });
+}
+
+function drawAnnotations() {
+  state.annotations.forEach(ann => {
+    ctx.save();
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = ann.color;
+    ctx.lineWidth = ann.size;
+
+    if (ann.type === 'draw') {
+      if (!ann.points || ann.points.length < 2) { ctx.restore(); return; }
+      ctx.beginPath();
+      ctx.moveTo((ann.points[0].x / 100) * canvas.width, (ann.points[0].y / 100) * canvas.height);
+      for (let i = 1; i < ann.points.length; i++) {
+        ctx.lineTo((ann.points[i].x / 100) * canvas.width, (ann.points[i].y / 100) * canvas.height);
+      }
+      ctx.stroke();
+    } else if (ann.type === 'rect') {
+      const x1 = (ann.x1 / 100) * canvas.width;
+      const y1 = (ann.y1 / 100) * canvas.height;
+      const x2 = (ann.x2 / 100) * canvas.width;
+      const y2 = (ann.y2 / 100) * canvas.height;
+      ctx.strokeRect(x1, y1, x2 - x1, y2 - y1);
+    } else if (ann.type === 'arrow') {
+      const x1 = (ann.x1 / 100) * canvas.width;
+      const y1 = (ann.y1 / 100) * canvas.height;
+      const x2 = (ann.x2 / 100) * canvas.width;
+      const y2 = (ann.y2 / 100) * canvas.height;
+      
+      const headlen = 15 + ann.size;
+      const dx = x2 - x1;
+      const dy = y2 - y1;
+      const angle = Math.atan2(dy, dx);
+
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.lineTo(x2 - headlen * Math.cos(angle - Math.PI / 6), y2 - headlen * Math.sin(angle - Math.PI / 6));
+      ctx.moveTo(x2, y2);
+      ctx.lineTo(x2 - headlen * Math.cos(angle + Math.PI / 6), y2 - headlen * Math.sin(angle + Math.PI / 6));
+      ctx.stroke();
+    }
+    ctx.restore();
+  });
+}
+
 function render() {
   if (!originalImage) return;
 
   const t = getTransformMatrix();
-  const wChanged = canvas.width !== t.w || canvas.height !== t.h;
   canvas.width = t.w;
   canvas.height = t.h;
 
   if (!viewport.initialized && canvas.width > 0) {
     viewport.initialized = true;
     fitToScreen();
-  } else if (wChanged) {
-    // Optionally auto-fit when dimension changes drastically, like switching platform size.
-    // For now, keep it manual via "Fit" button unless initialization.
   }
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawBackground();
 
-  // Apply Transform
+  // Draw "Behind" Layers
+  drawText('on');
+
+  // Apply Transform for Mockup
   ctx.save();
   ctx.setTransform(t.m.a, t.m.b, t.m.c, t.m.d, t.m.e, t.m.f);
 
@@ -773,7 +1049,6 @@ function render() {
         ctx.font = '14px sans-serif';
         ctx.fillText('—  ☐  ✕', t.innerW - 75, curDrawY + 28);
       } else if (isBrowser) {
-        // Modern Browser Address Bar
         const barY = curDrawY + 36;
         ctx.fillStyle = '#E8EAED';
         ctx.beginPath();
@@ -782,13 +1057,11 @@ function render() {
         ctx.fillStyle = '#9AA0A6';
         ctx.font = '12px sans-serif';
         ctx.fillText('google.com', 100, barY + 4);
-        // Dots
         ctx.fillStyle = '#BDC1C6';
         ctx.beginPath(); ctx.arc(25, barY, 4, 0, Math.PI * 2); ctx.fill();
         ctx.beginPath(); ctx.arc(43, barY, 4, 0, Math.PI * 2); ctx.fill();
         ctx.beginPath(); ctx.arc(61, barY, 4, 0, Math.PI * 2); ctx.fill();
       } else if (isMinimal) {
-        // Just a thin pill handle
         ctx.fillStyle = '#E0E0E0';
         ctx.beginPath();
         roundRect(ctx, t.innerW / 2 - 30, curDrawY + 12, 60, 8, 4);
@@ -799,13 +1072,11 @@ function render() {
     // Render Image
     ctx.drawImage(offscreenCanvas, 0, 0);
 
-    // Apply Tint for trailing cascade layers
     if (tintOpacity > 0) {
       ctx.fillStyle = `rgba(0,0,0,${tintOpacity})`;
       ctx.fillRect(0, curDrawY, t.innerW, totalInnerH);
     }
 
-    // Frame Outline
     if (state.bgType !== 'transparent') {
       ctx.strokeStyle = 'rgba(0,0,0,0.1)';
       ctx.lineWidth = 1;
@@ -826,7 +1097,6 @@ function render() {
     else if (state.transform === 'stack-iso-left') { spacingX = -160; spacingY = -160; }
     else if (state.transform === 'stack-iso-right') { spacingX = 160; spacingY = -160; }
     else if (state.transform === 'stack-stand') { spacingX = -100; spacingY = -200; }
-
     drawScreenshotLayer(spacingX, spacingY, 1, 0.45, 0);
     drawScreenshotLayer(spacingX * 0.5, spacingY * 0.5, 1, 0.20, 0);
     drawScreenshotLayer(0, 0, 1, 0, 0);
@@ -837,13 +1107,11 @@ function render() {
       ctx.translate(shiftX, shiftY);
       ctx.scale(0.85, 0.85);
       ctx.transform(1, angle, 0, 1, 0, 0);
-
       ctx.save();
       roundRect(ctx, 0, curDrawY + (idx * sliceH), t.innerW, sliceH, idx === 0 ? state.radius : 0);
       ctx.clip();
       ctx.drawImage(offscreenCanvas, 0, 0);
       ctx.restore();
-
       ctx.strokeStyle = 'rgba(0,0,0,0.1)';
       ctx.lineWidth = 2;
       roundRect(ctx, 0, curDrawY + (idx * sliceH), t.innerW, sliceH, 0);
@@ -871,13 +1139,11 @@ function render() {
   } else if (state.transform === 'reflect-3d') {
     drawScreenshotLayer(0, 0, 1, 0, 0);
     ctx.save();
-    // Increase translation to 2.15 to add a physical gap between product and reflection
     ctx.translate(0, (totalInnerH * 2.15) - t.frameH);
     ctx.scale(1, -1);
     const grad = ctx.createLinearGradient(0, curDrawY, 0, curDrawY + totalInnerH);
     grad.addColorStop(0, 'rgba(0,0,0,0.4)');
     grad.addColorStop(0.5, 'rgba(0,0,0,0)');
-
     ctx.save();
     roundRect(ctx, 0, curDrawY, t.innerW, totalInnerH, state.radius);
     ctx.clip();
@@ -892,6 +1158,11 @@ function render() {
   }
 
   ctx.restore();
+
+  drawAnnotations();
+
+  // Draw "Above" Layers (On Top)
+  drawText('off');
 }
 
 function roundRect(ctx, x, y, width, height, radius) {
@@ -909,6 +1180,9 @@ function roundRect(ctx, x, y, width, height, radius) {
 }
 
 // --- Interaction / Drawing Math ---
+let isDraggingText = false;
+let dragOffset = { x: 0, y: 0 };
+
 function getMousePos(evt) {
   const rect = canvas.getBoundingClientRect();
   const scaleX = canvas.width / rect.width;
@@ -919,105 +1193,120 @@ function getMousePos(evt) {
   };
 }
 
-function mapToInner(pos) {
-  const t = getTransformMatrix();
-  const inv = t.m.inverse();
-  const pt = new DOMPoint(pos.x, pos.y);
-  const transPt = pt.matrixTransform(inv);
-  return { x: transPt.x, y: transPt.y };
-}
-
 canvas.addEventListener('mousedown', (e) => {
   if (!originalImage || currentTool === 'pan') return;
-  isDrawing = true;
-  const pos = mapToInner(getMousePos(e));
-  startX = pos.x;
-  startY = pos.y;
+  e.stopPropagation();
+  e.preventDefault();
 
-  offscreenCtx.beginPath();
-  offscreenCtx.moveTo(startX, startY);
-  offscreenCtx.lineCap = 'round';
-  offscreenCtx.lineJoin = 'round';
-  offscreenCtx.strokeStyle = state.color;
-  offscreenCtx.lineWidth = state.size;
+  const rawPos = getMousePos(e);
+
+  // Check Text Selection
+  if (currentTool === 'text') {
+    let hitIndex = -1;
+    for (let i = state.textLayers.length - 1; i >= 0; i--) {
+      const layer = state.textLayers[i];
+      if (layer.rect && 
+          rawPos.x >= layer.rect.x && rawPos.x <= layer.rect.x + layer.rect.w &&
+          rawPos.y >= layer.rect.y && rawPos.y <= layer.rect.y + layer.rect.h) {
+        hitIndex = i;
+        break;
+      }
+    }
+
+    if (hitIndex !== -1) {
+      state.selectedTextIndex = hitIndex;
+      isDraggingText = true;
+      const layer = state.textLayers[hitIndex];
+      const layerPX = (layer.x / 100) * canvas.width;
+      const layerPY = (layer.y / 100) * canvas.height;
+      dragOffset.x = rawPos.x - layerPX;
+      dragOffset.y = rawPos.y - layerPY;
+      syncTextUI();
+      render();
+      return;
+    } else {
+      state.selectedTextIndex = -1;
+      syncTextUI();
+      render();
+    }
+  }
+
+  // Annotation Start
+  if (['draw', 'rect', 'arrow'].includes(currentTool)) {
+    isDrawing = true;
+    const px = (rawPos.x / canvas.width) * 100;
+    const py = (rawPos.y / canvas.height) * 100;
+    
+    currentAnnotation = {
+      type: currentTool,
+      color: state.color,
+      size: state.size,
+      x1: px, y1: py,
+      x2: px, y2: py,
+      points: [{ x: px, y: py }]
+    };
+    state.annotations.push(currentAnnotation);
+  }
 });
 
 canvas.addEventListener('mousemove', (e) => {
-  if (!isDrawing) return;
   const rawPos = getMousePos(e);
-  const pos = mapToInner(rawPos);
 
-  if (currentTool === 'draw') {
-    offscreenCtx.lineTo(pos.x, pos.y);
-    offscreenCtx.stroke();
-    render();
-  } else {
-    render();
-
-    const t = getTransformMatrix();
-    ctx.save();
-    ctx.setTransform(t.m.a, t.m.b, t.m.c, t.m.d, t.m.e, t.m.f);
-
-    ctx.beginPath();
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-    ctx.strokeStyle = state.color;
-    ctx.lineWidth = state.size;
-
-    if (currentTool === 'rect') {
-      ctx.strokeRect(startX, startY, pos.x - startX, pos.y - startY);
-    } else if (currentTool === 'arrow') {
-      const headlen = 15 + state.size;
-      const dx = pos.x - startX;
-      const dy = pos.y - startY;
-      const angle = Math.atan2(dy, dx);
-
-      ctx.moveTo(startX, startY);
-      ctx.lineTo(pos.x, pos.y);
-      ctx.lineTo(pos.x - headlen * Math.cos(angle - Math.PI / 6), pos.y - headlen * Math.sin(angle - Math.PI / 6));
-      ctx.moveTo(pos.x, pos.y);
-      ctx.lineTo(pos.x - headlen * Math.cos(angle + Math.PI / 6), pos.y - headlen * Math.sin(angle + Math.PI / 6));
-      ctx.stroke();
+  if (isDraggingText) {
+    const layer = state.textLayers[state.selectedTextIndex];
+    if (layer) {
+      const newPX = rawPos.x - dragOffset.x;
+      const newPY = rawPos.y - dragOffset.y;
+      layer.x = (newPX / canvas.width) * 100;
+      layer.y = (newPY / canvas.height) * 100;
+      render();
     }
-    ctx.restore();
+    return;
   }
+
+  if (!isDrawing || !currentAnnotation) return;
+
+  const px = (rawPos.x / canvas.width) * 100;
+  const py = (rawPos.y / canvas.height) * 100;
+
+  if (currentAnnotation.type === 'draw') {
+    currentAnnotation.points.push({ x: px, y: py });
+  } else {
+    currentAnnotation.x2 = px;
+    currentAnnotation.y2 = py;
+  }
+  render();
 });
 
-canvas.addEventListener('mouseup', finishDrawing);
-canvas.addEventListener('mouseout', (e) => { if (isDrawing) finishDrawing(e); });
-
-function finishDrawing(e) {
-  if (!isDrawing) return;
+canvas.addEventListener('mouseup', () => {
+  if (isDrawing) saveDrawState();
   isDrawing = false;
+  isDraggingText = false;
+  currentAnnotation = null;
+});
 
-  if (currentTool !== 'draw') {
-    const pos = mapToInner(getMousePos(e));
+canvas.addEventListener('mouseout', () => {
+  if (isDrawing) saveDrawState();
+  isDrawing = false;
+  isDraggingText = false;
+  currentAnnotation = null;
+});
 
-    offscreenCtx.beginPath();
-    offscreenCtx.lineCap = 'round';
-    offscreenCtx.lineJoin = 'round';
-    offscreenCtx.strokeStyle = state.color;
-    offscreenCtx.lineWidth = state.size;
-
-    if (currentTool === 'rect') {
-      offscreenCtx.strokeRect(startX, startY, pos.x - startX, pos.y - startY);
-    } else if (currentTool === 'arrow') {
-      const headlen = 15 + state.size;
-      const dx = pos.x - startX;
-      const dy = pos.y - startY;
-      const angle = Math.atan2(dy, dx);
-
-      offscreenCtx.moveTo(startX, startY);
-      offscreenCtx.lineTo(pos.x, pos.y);
-      offscreenCtx.lineTo(pos.x - headlen * Math.cos(angle - Math.PI / 6), pos.y - headlen * Math.sin(angle - Math.PI / 6));
-      offscreenCtx.moveTo(pos.x, pos.y);
-      offscreenCtx.lineTo(pos.x - headlen * Math.cos(angle + Math.PI / 6), pos.y - headlen * Math.sin(angle + Math.PI / 6));
-      offscreenCtx.stroke();
-    }
-  }
-
-  saveDrawState();
+function saveDrawState() {
+  // Push state for undo if needed
   render();
+}
+
+function undo() {
+  if (state.annotations.length > 0) {
+    state.annotations.pop();
+    render();
+  } else if (state.textLayers.length > 0) {
+    state.textLayers.pop();
+    state.selectedTextIndex = state.textLayers.length - 1;
+    syncTextUI();
+    render();
+  }
 }
 
 // --- Export Action ---
@@ -1027,9 +1316,8 @@ function exportImage() {
   btn.textContent = 'Processing HD Image...';
 
   setTimeout(() => {
-    const isTrans = state.bgType === 'transparent' && state.bgCategory === 'solid';
-    const extension = isTrans ? 'png' : 'jpeg';
-    const mime = isTrans ? 'image/png' : 'image/jpeg';
+    const mime = 'image/png';
+    const extension = 'png';
 
     const a = document.createElement('a');
     a.href = canvas.toDataURL(mime, 1.0);
