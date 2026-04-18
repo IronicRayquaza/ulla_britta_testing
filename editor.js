@@ -246,33 +246,6 @@ function initUI() {
     });
   });
 
-  function syncTextUI() {
-    const layer = state.textLayers[state.selectedTextIndex];
-    if (!layer) return;
-
-    document.getElementById('param-text-content').value = layer.text;
-    document.getElementById('param-text-font').value = layer.font;
-    document.getElementById('param-textSize').value = layer.size;
-    document.getElementById('val-textSize').textContent = layer.size + 'px';
-    document.getElementById('param-text-color').value = layer.color || '#000000';
-    // Shadows
-    document.getElementById('param-text-shadow-color').value = layer.shadowColor || '#000000';
-    document.querySelectorAll('.shadow-item').forEach(b => {
-      b.classList.toggle('active', b.dataset.value === layer.shadowType);
-    });
-
-    state.textSize = layer.size;
-
-    // Presets
-    document.querySelectorAll('#param-text-preset .segment-btn').forEach(b => {
-      b.classList.toggle('active', b.dataset.value === layer.preset);
-    });
-
-    // Depth
-    document.querySelectorAll('#param-text-depth .segment-btn').forEach(b => {
-      b.classList.toggle('active', b.dataset.value === layer.depth);
-    });
-  }
 
   document.getElementById('param-text-color').addEventListener('input', (e) => {
     const layer = state.textLayers[state.selectedTextIndex];
@@ -713,6 +686,39 @@ function drawBackground() {
   }
 }
 
+function syncTextUI() {
+  const layer = state.textLayers[state.selectedTextIndex];
+  const panel = document.getElementById('text-engine-panel');
+  if (!layer) {
+    if (panel) panel.style.display = 'none';
+    return;
+  }
+  if (panel) panel.style.display = 'flex';
+
+  document.getElementById('param-text-content').value = layer.text;
+  document.getElementById('param-text-font').value = layer.font;
+  document.getElementById('param-textSize').value = layer.size;
+  document.getElementById('val-textSize').textContent = layer.size + 'px';
+  document.getElementById('param-text-color').value = layer.color || '#000000';
+  // Shadows
+  document.getElementById('param-text-shadow-color').value = layer.shadowColor || '#000000';
+  document.querySelectorAll('.shadow-item').forEach(b => {
+    b.classList.toggle('active', b.dataset.value === layer.shadowType);
+  });
+
+  state.textSize = layer.size;
+
+  // Presets
+  document.querySelectorAll('#param-text-preset .segment-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.value === layer.preset);
+  });
+
+  // Depth
+  document.querySelectorAll('#param-text-depth .segment-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.value === layer.depth);
+  });
+}
+
 function getTransformMatrix() {
   const pad = state.padding;
   let frameH = 0;
@@ -815,7 +821,7 @@ function getTransformMatrix() {
   return { m, w: finalCanvasW, h: finalCanvasH, drawX, drawY, innerW: baseContentW, innerH: baseContentH - frameH, frameH, cx, cy, contentScale };
 }
 
-function drawText(filterDepth) {
+function drawText(filterDepth, forExport = false) {
   state.textLayers.forEach((layer, index) => {
     if (!layer.text || layer.depth !== filterDepth) return;
 
@@ -863,7 +869,7 @@ function drawText(filterDepth) {
     });
 
     // Draw Selection Highlight (WITHOUT SHADOW)
-    if (state.selectedTextIndex === index && currentTool === 'text') {
+    if (!forExport && state.selectedTextIndex === index && currentTool === 'text') {
       ctx.shadowColor = 'transparent'; // Disable shadow for the highlight
       ctx.shadowBlur = 0;
       ctx.shadowOffsetX = 0;
@@ -925,7 +931,7 @@ function drawAnnotations() {
   });
 }
 
-function render() {
+function render(forExport = false) {
   if (!originalImage) return;
 
   const t = getTransformMatrix();
@@ -941,9 +947,9 @@ function render() {
   drawBackground();
 
   // Draw "Behind" Layers
-  drawText('on');
+  drawText('on', forExport);
 
-  // Apply Transform for Mockup
+  // Apply Transform for Mockup (Mockup drawing logic follows...)
   ctx.save();
   ctx.setTransform(t.m.a, t.m.b, t.m.c, t.m.d, t.m.e, t.m.f);
 
@@ -1162,7 +1168,7 @@ function render() {
   drawAnnotations();
 
   // Draw "Above" Layers (On Top)
-  drawText('off');
+  drawText('off', forExport);
 }
 
 function roundRect(ctx, x, y, width, height, radius) {
@@ -1316,6 +1322,9 @@ function exportImage() {
   btn.textContent = 'Processing HD Image...';
 
   setTimeout(() => {
+    // Force a clean render without UI highlights for export
+    render(true);
+
     const mime = 'image/png';
     const extension = 'png';
 
@@ -1329,6 +1338,9 @@ function exportImage() {
     document.body.removeChild(a);
 
     btn.textContent = orgText;
+    
+    // Restore UI highlights
+    render(false);
   }, 150);
 }
 
