@@ -27,3 +27,6 @@ There are many screenshot tools available, but 4K Screenshot Studio was built wi
 2. Enable **Developer mode** in the top right corner.
 3. Click **Load unpacked** and select the folder containing this extension's files.
 4. Pin the extension to your toolbar, capture a page, and start designing.
+
+
+CONTRADICTING LINE: B
