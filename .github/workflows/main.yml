@@ -1,18 +1,21 @@
-name: Intentional Failure Test
+name: CI Pipeline
 
 on: [push]
 
 jobs:
-  fail-job:
+  build-and-validate:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Force failure
+      - name: Validate Extension Structure
         run: |
-          echo "Forcing failure..."
-          exit 1
-#testing shit 
-#another try
+          echo "Validating extension manifest..."
+          if [ -f "manifest.json" ]; then
+            echo "Manifest found. Structure is valid."
+          else
+            echo "Error: manifest.json is missing!"
+            exit 1
+          fi
